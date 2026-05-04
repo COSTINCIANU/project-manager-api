@@ -1,13 +1,21 @@
 nelmio_cors:
     defaults:
         origin_regex: true
-        allow_origin: ["http://localhost:5173"]
+        allow_origin:
+            [
+                "https://project-manager-eta-orcin.vercel.app",
+                "http://localhost:5173",
+            ]
         allow_methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
         allow_headers: ["Content-Type", "Authorization"]
         max_age: 3600
     paths:
         "^/api":
-            allow_origin: ["http://localhost:5173"]
+            allow_origin:
+                [
+                    "https://project-manager-eta-orcin.vercel.app",
+                    "http://localhost:5173",
+                ]
             allow_methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
             allow_headers: ["Content-Type", "Authorization"]
             max_age: 3600
