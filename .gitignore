@@ -1,8 +1,12 @@
 
 ###> symfony/framework-bundle ###
+.env.local
+.env.*.local
+
 /.env.local
 /.env.local.php
 /.env.*.local
+
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
@@ -10,6 +14,7 @@
 ###< symfony/framework-bundle ###
 
 
+note.txt
 /note.txt
 
 ###> lexik/jwt-authentication-bundle ###
