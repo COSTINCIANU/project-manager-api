@@ -8,4 +8,4 @@ cmds = ["COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloa
 cmds = ["APP_ENV=prod php bin/console cache:warmup"]
 
 [start]
-cmd = "php -S 0.0.0.0:8000 public/index.php"
+cmd = "php -S 0.0.0.0:$PORT -t public/ public/index.php"
