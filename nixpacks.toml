@@ -5,7 +5,7 @@ nixPkgs = ["php82", "php82Extensions.pdo", "php82Extensions.pdo_mysql", "php82Ex
 cmds = ["COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader"]
 
 [phases.build]
-cmds = ["rm -rf var/cache/*", "APP_ENV=prod php bin/console cache:warmup"]
+cmds = ["rm -rf var/cache/prod", "rm -rf var/cache/dev", "APP_ENV=prod php bin/console cache:clear --no-warmup", "APP_ENV=prod php bin/console cache:warmup"]
 
 [start]
 cmd = "php -S 0.0.0.0:8080 -t public/ public/index.php"
