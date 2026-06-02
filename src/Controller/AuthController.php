@@ -1,4 +1,9 @@
 <?php
+// =====================================================
+// AuthController.php — Authentification
+// Gère l'inscription, connexion, profil
+// et réinitialisation du mot de passe
+// =====================================================
 
 namespace App\Controller;
 
@@ -15,7 +20,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class AuthController extends AbstractController
 {
     // =====================
-    // POST — Inscription d'un nouvel utilisateur
+    // POST — Inscription
     // =====================
     #[Route('/register', methods: ['POST'])]
     public function register(
@@ -23,29 +28,29 @@ class AuthController extends AbstractController
         EntityManagerInterface $em,
         UserPasswordHasherInterface $hasher
     ): JsonResponse {
-        // On récupère les données envoyées par React
         $data = json_decode($request->getContent(), true);
 
-        // On vérifie que l'email et le mot de passe sont présents
         if (!isset($data['email']) || !isset($data['password'])) {
             return $this->json(['error' => 'Email et mot de passe requis'], 400);
         }
 
-        // On vérifie que l'email n'est pas déjà utilisé
         $existing = $em->getRepository(User::class)->findOneBy(['email' => $data['email']]);
         if ($existing) {
             return $this->json(['error' => 'Cet email est déjà utilisé'], 400);
         }
 
-        // On crée un nouvel utilisateur
         $user = new User();
         $user->setEmail($data['email']);
+        $user->setPassword($hasher->hashPassword($user, $data['password']));
 
-        // On hash le mot de passe pour la sécurité
-        $hashedPassword = $hasher->hashPassword($user, $data['password']);
-        $user->setPassword($hashedPassword);
+        // Nom optionnel à l'inscription
+        if (!empty($data['name'])) {
+            $user->setName($data['name']);
+        }
 
-        // On sauvegarde dans la base de données
+        // Rôle par défaut : dev
+        $user->setRole($data['role'] ?? 'dev');
+
         $em->persist($user);
         $em->flush();
 
@@ -56,7 +61,7 @@ class AuthController extends AbstractController
     }
 
     // =====================
-    // POST — Connexion d'un utilisateur
+    // POST — Connexion
     // =====================
     #[Route('/login', methods: ['POST'])]
     public function login(
@@ -65,48 +70,170 @@ class AuthController extends AbstractController
         UserPasswordHasherInterface $hasher,
         JWTTokenManagerInterface $jwtManager
     ): JsonResponse {
-        // On récupère les données envoyées par React
         $data = json_decode($request->getContent(), true);
 
-        // On vérifie que l'email et le mot de passe sont présents
         if (!isset($data['email']) || !isset($data['password'])) {
             return $this->json(['error' => 'Email et mot de passe requis'], 400);
         }
 
-        // On cherche l'utilisateur par son email
         $user = $em->getRepository(User::class)->findOneBy(['email' => $data['email']]);
 
-        // Si l'utilisateur n'existe pas ou le mot de passe est incorrect
         if (!$user || !$hasher->isPasswordValid($user, $data['password'])) {
             return $this->json(['error' => 'Email ou mot de passe incorrect'], 401);
         }
 
-        // On génère le token JWT
         $token = $jwtManager->create($user);
 
         return $this->json([
             'message' => 'Connexion réussie !',
             'token' => $token,
             'email' => $user->getEmail(),
+            'name' => $user->getName(),
+            'role' => $user->getRole(),
+            'avatar' => $user->getAvatar(),
+            'id' => $user->getId(),
         ]);
     }
 
     // =====================
-    // GET — Récupérer le profil de l'utilisateur connecté
+    // GET — Profil utilisateur connecté
     // =====================
     #[Route('/me', methods: ['GET'])]
     public function me(): JsonResponse
     {
-        // On récupère l'utilisateur connecté depuis le token JWT
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
-        // Si pas d'utilisateur connecté
         if (!$user) {
             return $this->json(['error' => 'Non authentifié'], 401);
         }
 
         return $this->json([
-            'email' => $user->getUserIdentifier(),
+            'id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'name' => $user->getName(),
+            'role' => $user->getRole(),
+            'avatar' => $user->getAvatar(),
+            'createdAt' => $user->getCreatedAt()->format('Y-m-d'),
         ]);
+    }
+
+    // =====================
+    // PUT — Modifier le profil
+    // =====================
+    #[Route('/profile', methods: ['PUT'])]
+    public function updateProfile(
+        Request $request,
+        EntityManagerInterface $em,
+        UserPasswordHasherInterface $hasher
+    ): JsonResponse {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->json(['error' => 'Non authentifié'], 401);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        // Mise à jour du nom
+        if (isset($data['name'])) {
+            $user->setName($data['name']);
+        }
+
+        // Mise à jour du rôle
+        if (isset($data['role'])) {
+            $user->setRole($data['role']);
+        }
+
+        // Mise à jour du mot de passe
+        if (!empty($data['password'])) {
+            $user->setPassword($hasher->hashPassword($user, $data['password']));
+        }
+
+        $em->flush();
+
+        return $this->json([
+            'message' => 'Profil mis à jour !',
+            'id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'name' => $user->getName(),
+            'role' => $user->getRole(),
+        ]);
+    }
+
+    // =====================
+    // POST — Réinitialisation mot de passe
+    // Étape 1 : demande de réinitialisation
+    // =====================
+    #[Route('/forgot-password', methods: ['POST'])]
+    public function forgotPassword(
+        Request $request,
+        EntityManagerInterface $em
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true);
+
+        if (empty($data['email'])) {
+            return $this->json(['error' => 'Email requis'], 400);
+        }
+
+        $user = $em->getRepository(User::class)->findOneBy(['email' => $data['email']]);
+
+        // On ne révèle pas si l'email existe ou non (sécurité)
+        if (!$user) {
+            return $this->json(['message' => 'Si cet email existe, un lien a été envoyé.']);
+        }
+
+        // Génère un token unique valable 1 heure
+        $token = bin2hex(random_bytes(32));
+        $user->setResetToken($token);
+        $user->setResetTokenExpiry(new \DateTime('+1 hour'));
+
+        $em->flush();
+
+        // TODO : envoyer l'email avec le lien de réinitialisation
+        // Pour l'instant on retourne le token pour les tests
+        return $this->json([
+            'message' => 'Lien de réinitialisation envoyé !',
+            'token' => $token, // À retirer en production
+        ]);
+    }
+
+    // =====================
+    // POST — Réinitialisation mot de passe
+    // Étape 2 : nouveau mot de passe
+    // =====================
+    #[Route('/reset-password', methods: ['POST'])]
+    public function resetPassword(
+        Request $request,
+        EntityManagerInterface $em,
+        UserPasswordHasherInterface $hasher
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true);
+
+        if (empty($data['token']) || empty($data['password'])) {
+            return $this->json(['error' => 'Token et mot de passe requis'], 400);
+        }
+
+        // On cherche l'utilisateur par son token
+        $user = $em->getRepository(User::class)->findOneBy(['resetToken' => $data['token']]);
+
+        if (!$user) {
+            return $this->json(['error' => 'Token invalide'], 400);
+        }
+
+        // On vérifie que le token n'a pas expiré
+        if ($user->getResetTokenExpiry() < new \DateTime()) {
+            return $this->json(['error' => 'Token expiré'], 400);
+        }
+
+        // On met à jour le mot de passe
+        $user->setPassword($hasher->hashPassword($user, $data['password']));
+        $user->setResetToken(null);
+        $user->setResetTokenExpiry(null);
+
+        $em->flush();
+
+        return $this->json(['message' => 'Mot de passe réinitialisé avec succès !']);
     }
 }

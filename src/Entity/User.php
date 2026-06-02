@@ -1,4 +1,9 @@
 <?php
+// =====================================================
+// User.php — Entité utilisateur
+// Gère l'authentification et le profil utilisateur
+// avec rôles métier : admin, manager, dev, client
+// =====================================================
 
 namespace App\Entity;
 
@@ -19,96 +24,88 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
-    /**
-     * @var list<string> The user roles
-     */
+    // Rôles Symfony (ROLE_USER, ROLE_ADMIN)
     #[ORM\Column]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
     private ?string $password = null;
 
-    public function getId(): ?int
+    // Nom affiché de l'utilisateur
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $name = null;
+
+    // Rôle métier : admin, manager, dev, client
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $role = 'dev';
+
+    // Avatar — URL ou nom du fichier
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $avatar = null;
+
+    // Date d'inscription
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $createdAt = null;
+
+    // Token de réinitialisation mot de passe
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $resetToken = null;
+
+    // Expiration du token de réinitialisation
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $resetTokenExpiry = null;
+
+    public function __construct()
     {
-        return $this->id;
+        $this->createdAt = new \DateTime();
     }
 
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
+    public function getId(): ?int { return $this->id; }
 
-    public function setEmail(string $email): static
-    {
-        $this->email = $email;
+    public function getEmail(): ?string { return $this->email; }
+    public function setEmail(string $email): static { $this->email = $email; return $this; }
 
-        return $this;
-    }
+    public function getUserIdentifier(): string { return (string) $this->email; }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
-    public function getUserIdentifier(): string
-    {
-        return (string) $this->email;
-    }
-
-    /**
-     * @see UserInterface
-     */
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
-
+        if ($this->role === 'admin') {
+            $roles[] = 'ROLE_ADMIN';
+        }
         return array_unique($roles);
     }
 
-    /**
-     * @param list<string> $roles
-     */
-    public function setRoles(array $roles): static
-    {
-        $this->roles = $roles;
+    public function setRoles(array $roles): static { $this->roles = $roles; return $this; }
 
-        return $this;
-    }
+    public function getPassword(): ?string { return $this->password; }
+    public function setPassword(string $password): static { $this->password = $password; return $this; }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
+    public function getName(): ?string { return $this->name; }
+    public function setName(?string $name): static { $this->name = $name; return $this; }
 
-    public function setPassword(string $password): static
-    {
-        $this->password = $password;
+    public function getRole(): ?string { return $this->role; }
+    public function setRole(?string $role): static { $this->role = $role; return $this; }
 
-        return $this;
-    }
+    public function getAvatar(): ?string { return $this->avatar; }
+    public function setAvatar(?string $avatar): static { $this->avatar = $avatar; return $this; }
 
-    /**
-     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
-     */
+    public function getCreatedAt(): ?\DateTimeInterface { return $this->createdAt; }
+
+    public function getResetToken(): ?string { return $this->resetToken; }
+    public function setResetToken(?string $resetToken): static { $this->resetToken = $resetToken; return $this; }
+
+    public function getResetTokenExpiry(): ?\DateTimeInterface { return $this->resetTokenExpiry; }
+    public function setResetTokenExpiry(?\DateTimeInterface $expiry): static { $this->resetTokenExpiry = $expiry; return $this; }
+
     public function __serialize(): array
     {
         $data = (array) $this;
         $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
-
         return $data;
     }
 
     #[\Deprecated]
-    public function eraseCredentials(): void
-    {
-        // @deprecated, to be removed when upgrading to Symfony 8
-    }
+    public function eraseCredentials(): void {}
 }
