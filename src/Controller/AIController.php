@@ -81,6 +81,121 @@ class AIController extends AbstractController
     }
 
     // =====================
+    // POST — Générer des tâches automatiquement
+    // L'IA génère des tâches depuis une description
+    // =====================
+
+    #[Route('/generate-tasks', methods: ['POST'])]
+    public function generateTasks(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (empty($data['description'])) {
+            return $this->json(['error' => 'Description requise'], 400);
+        }
+
+        $description = $data['description'];
+
+        // Si pas de clé API — on retourne des tâches simulées
+        if (empty($this->anthropicApiKey)) {
+            return $this->simulatedTasks($description);
+        }
+
+        try {
+            // Appel à l'API Claude pour générer les tâches
+            $response = $this->httpClient->request('POST', 'https://api.anthropic.com/v1/messages', [
+                'headers' => [
+                    'x-api-key' => $this->anthropicApiKey,
+                    'anthropic-version' => '2023-06-01',
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => [
+                    'model' => 'claude-opus-4-5',
+                    'max_tokens' => 1024,
+                    'system' => 'Tu es un expert en gestion de projet. Génère des tâches en JSON uniquement. Format : {"tasks": [{"name": "...", "priority": "haute|normale|basse", "description": "..."}]}. Pas de texte en dehors du JSON.',
+                    'messages' => [
+                        [
+                            'role' => 'user',
+                            'content' => "Génère 5-8 tâches pour ce projet : $description"
+                        ]
+                    ],
+                ],
+            ]);
+
+            $result = $response->toArray();
+            $content = $result['content'][0]['text'];
+
+            // Parse le JSON retourné par l'IA
+            $tasksData = json_decode($content, true);
+
+            return $this->json([
+                'tasks' => $tasksData['tasks'] ?? [],
+                'simulated' => false,
+            ]);
+
+        } catch (\Exception $e) {
+            return $this->simulatedTasks($description);
+        }
+    }
+
+    // =====================
+    // Génération simulée de tâches
+    // =====================
+    private function simulatedTasks(string $description): JsonResponse
+    {
+        // On génère des tâches selon les mots clés de la description
+        $desc = strtolower($description);
+
+        if (str_contains($desc, 'e-commerce') || str_contains($desc, 'boutique') || str_contains($desc, 'shop')) {
+            $tasks = [
+                ['name' => 'Créer la maquette UI/UX', 'priority' => 'haute', 'description' => 'Design des pages principales'],
+                ['name' => 'Configurer la base de données', 'priority' => 'haute', 'description' => 'Tables produits, commandes, utilisateurs'],
+                ['name' => 'Développer le catalogue produits', 'priority' => 'haute', 'description' => 'Liste et détail des produits'],
+                ['name' => 'Intégrer le panier', 'priority' => 'haute', 'description' => 'Ajout/suppression de produits'],
+                ['name' => 'Configurer le paiement Stripe', 'priority' => 'haute', 'description' => 'Paiement sécurisé en ligne'],
+                ['name' => 'Système de gestion des commandes', 'priority' => 'normale', 'description' => 'Suivi des commandes'],
+                ['name' => 'Emails automatiques', 'priority' => 'normale', 'description' => 'Confirmation de commande'],
+                ['name' => 'Déployer en production', 'priority' => 'normale', 'description' => 'Mise en ligne du site'],
+            ];
+        } elseif (str_contains($desc, 'blog') || str_contains($desc, 'article') || str_contains($desc, 'cms')) {
+            $tasks = [
+                ['name' => 'Créer la structure du blog', 'priority' => 'haute', 'description' => 'Architecture des pages'],
+                ['name' => 'Système de catégories', 'priority' => 'haute', 'description' => 'Organisation des articles'],
+                ['name' => 'Éditeur de contenu', 'priority' => 'haute', 'description' => 'Interface de rédaction'],
+                ['name' => 'Gestion des commentaires', 'priority' => 'normale', 'description' => 'Modération des commentaires'],
+                ['name' => 'Optimisation SEO', 'priority' => 'normale', 'description' => 'Balises meta, sitemap'],
+                ['name' => 'Système de recherche', 'priority' => 'normale', 'description' => 'Recherche dans les articles'],
+                ['name' => 'Newsletter', 'priority' => 'basse', 'description' => 'Inscription et envoi'],
+            ];
+        } elseif (str_contains($desc, 'mobile') || str_contains($desc, 'app') || str_contains($desc, 'application')) {
+            $tasks = [
+                ['name' => 'Définir les user stories', 'priority' => 'haute', 'description' => 'Fonctionnalités principales'],
+                ['name' => 'Créer les maquettes', 'priority' => 'haute', 'description' => 'Design de l\'interface'],
+                ['name' => 'Configurer le projet React Native', 'priority' => 'haute', 'description' => 'Setup initial'],
+                ['name' => 'Développer l\'authentification', 'priority' => 'haute', 'description' => 'Login / Register'],
+                ['name' => 'Développer les fonctionnalités core', 'priority' => 'haute', 'description' => 'Features principales'],
+                ['name' => 'Tests sur iOS et Android', 'priority' => 'normale', 'description' => 'Tests multi-plateformes'],
+                ['name' => 'Publier sur les stores', 'priority' => 'normale', 'description' => 'App Store et Google Play'],
+            ];
+        } else {
+            // Tâches génériques
+            $tasks = [
+                ['name' => 'Analyser les besoins', 'priority' => 'haute', 'description' => 'Recueillir les exigences'],
+                ['name' => 'Créer la maquette', 'priority' => 'haute', 'description' => 'Design de l\'interface'],
+                ['name' => 'Développer le backend', 'priority' => 'haute', 'description' => 'API et base de données'],
+                ['name' => 'Développer le frontend', 'priority' => 'haute', 'description' => 'Interface utilisateur'],
+                ['name' => 'Écrire les tests', 'priority' => 'normale', 'description' => 'Tests unitaires et fonctionnels'],
+                ['name' => 'Déployer en staging', 'priority' => 'normale', 'description' => 'Environnement de test'],
+                ['name' => 'Déployer en production', 'priority' => 'normale', 'description' => 'Mise en ligne'],
+            ];
+        }
+
+        return $this->json([
+            'tasks' => $tasks,
+            'simulated' => true,
+        ]);
+    }
+    // =====================
     // Réponses simulées intelligentes
     // Basées sur le message de l'utilisateur
     // =====================
