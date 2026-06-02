@@ -22,10 +22,11 @@ class AttachmentController extends AbstractController
     // Dossier où les fichiers sont stockés
     private string $uploadDir;
 
-    public function __construct(string $projectDir)
+    public function __construct()
     {
         // Les fichiers sont stockés dans public/uploads/
-        $this->uploadDir = $projectDir . '/public/uploads/';
+        // On utilise __DIR__ pour trouver le chemin absolu
+        $this->uploadDir = __DIR__ . '/../../public/uploads/';
     }
 
     // =====================
