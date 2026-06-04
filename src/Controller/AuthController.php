@@ -236,4 +236,62 @@ class AuthController extends AbstractController
 
         return $this->json(['message' => 'Mot de passe réinitialisé avec succès !']);
     }
+
+
+    // =====================
+    // POST — Upload avatar
+    // =====================
+    #[Route('/avatar', methods: ['POST'])]
+    public function uploadAvatar(
+        Request $request,
+        EntityManagerInterface $em
+    ): JsonResponse {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->json(['error' => 'Non authentifié'], 401);
+        }
+
+        // On récupère le fichier uploadé
+        $file = $request->files->get('avatar');
+
+        if (!$file) {
+            return $this->json(['error' => 'Aucun fichier fourni'], 400);
+        }
+
+        // On vérifie que c'est bien une image
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!in_array($file->getMimeType(), $allowedTypes)) {
+            return $this->json(['error' => 'Format non supporté. Utilisez JPG, PNG ou GIF'], 400);
+        }
+
+        // On génère un nom unique pour le fichier
+        $filename = uniqid('avatar_') . '.' . $file->guessExtension();
+
+        // On déplace le fichier dans le dossier public/uploads/avatars/
+        $uploadDir = __DIR__ . '/../../public/uploads/avatars/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        $file->move($uploadDir, $filename);
+
+        // On supprime l'ancien avatar si il existe
+        if ($user->getAvatar()) {
+            $oldFile = $uploadDir . basename($user->getAvatar());
+            if (file_exists($oldFile)) {
+                unlink($oldFile);
+            }
+        }
+
+        // On sauvegarde le chemin dans la base de données
+        $avatarUrl = '/uploads/avatars/' . $filename;
+        $user->setAvatar($avatarUrl);
+        $em->flush();
+
+        return $this->json([
+            'message' => 'Avatar mis à jour !',
+            'avatar' => $avatarUrl,
+        ]);
+    }
 }
