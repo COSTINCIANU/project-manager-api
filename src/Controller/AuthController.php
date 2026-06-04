@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 
 #[Route('/api/auth')]
 class AuthController extends AbstractController
@@ -169,7 +171,8 @@ class AuthController extends AbstractController
     #[Route('/forgot-password', methods: ['POST'])]
     public function forgotPassword(
         Request $request,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        MailerInterface $mailer
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
@@ -188,14 +191,38 @@ class AuthController extends AbstractController
         $token = bin2hex(random_bytes(32));
         $user->setResetToken($token);
         $user->setResetTokenExpiry(new \DateTime('+1 hour'));
-
         $em->flush();
 
-        // TODO : envoyer l'email avec le lien de réinitialisation
-        // Pour l'instant on retourne le token pour les tests
+        // Lien de réinitialisation
+        $resetLink = "https://project-manager.costincianu.fr/reset-password?token=" . $token;
+
+        // Envoi de l'email
+        $email = (new Email())
+            ->from('contact@costincianu.fr')
+            ->to($user->getEmail())
+            ->subject('Réinitialisation de votre mot de passe — Project Manager')
+            ->html("
+                <div style='font-family: sans-serif; max-width: 500px; margin: 0 auto;'>
+                    <h2 style='color: #111;'>🔐 Réinitialisation du mot de passe</h2>
+                    <p>Bonjour,</p>
+                    <p>Vous avez demandé à réinitialiser votre mot de passe sur <strong>Project Manager</strong>.</p>
+                    <p>Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe :</p>
+                    <a href='{$resetLink}'
+                    style='display: inline-block; padding: 12px 24px; background: #111; color: #fff;
+                            border-radius: 8px; text-decoration: none; font-weight: 500; margin: 16px 0;'>
+                        Réinitialiser mon mot de passe
+                    </a>
+                    <p style='color: #aaa; font-size: 12px;'>Ce lien expire dans 1 heure.</p>
+                    <p style='color: #aaa; font-size: 12px;'>Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
+                    <hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'>
+                    <p style='color: #aaa; font-size: 11px;'>© 2026 Project Manager — COSTINCIANU Gheorghina</p>
+                </div>
+            ");
+
+        $mailer->send($email);
+
         return $this->json([
-            'message' => 'Lien de réinitialisation envoyé !',
-            'token' => $token, // À retirer en production
+            'message' => 'Un email de réinitialisation a été envoyé !',
         ]);
     }
 
