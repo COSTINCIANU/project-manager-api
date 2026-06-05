@@ -12,25 +12,35 @@ security:
 
     # Configuration des firewalls
     firewalls:
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
+    dev:
+        pattern: ^/(_(profiler|wdt)|css|images|js)/
+        security: false
 
-        # Firewall pour les routes publiques (login et register)
-        api_public:
-            pattern: ^/api/auth
-            stateless: true
-            security: false
+    # Firewall pour les routes protégées par JWT (me, profile, avatar)
+    api_protected:
+        pattern: ^/api/auth/(me|profile|avatar)
+        stateless: true
+        jwt: ~
 
-        # Firewall pour les routes protégées par JWT
-        api:
-            pattern: ^/api
-            stateless: true
-            jwt: ~
+    # Firewall pour les routes publiques (login, register, forgot, reset, oauth, 2fa)
+    api_public:
+        pattern: ^/api/auth
+        stateless: true
+        security: false
+
+    # Firewall pour les routes protégées par JWT
+    api:
+        pattern: ^/api
+        stateless: true
+        jwt: ~
 
     # Contrôle d'accès — routes protégées
     access_control:
-        # Routes publiques — pas besoin d'être connecté
+        # Routes protégées auth
+        - { path: ^/api/auth/me, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/auth/profile, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/auth/avatar, roles: IS_AUTHENTICATED_FULLY }
+        # Routes publiques auth
         - { path: ^/api/auth, roles: PUBLIC_ACCESS }
         # Routes protégées — token JWT requis
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
