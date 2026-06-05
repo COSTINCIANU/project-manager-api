@@ -18,6 +18,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Service\ActionLogService;
+
+
 
 #[Route('/api/tasks')]
 class TaskController extends AbstractController
@@ -82,7 +85,7 @@ class TaskController extends AbstractController
     // POST — Créer une nouvelle tâche
     // =====================
     #[Route('', methods: ['POST'])]
-    public function create(Request $request, EntityManagerInterface $em, PermissionService $permissions): JsonResponse
+    public function create(Request $request, EntityManagerInterface $em, PermissionService $permissions, ActionLogService $actionLog): JsonResponse
     {
         // Dev, manager et admin peuvent créer une tâche
         if (!$permissions->canCreateTask()) {
@@ -118,6 +121,11 @@ class TaskController extends AbstractController
         $em->persist($task);
         $em->flush();
 
+        // =====================
+        // Log de l'action — enregistre la création dans l'historique
+        // =====================
+        $actionLog->log('create_task', 'Tâche créée : ' . $task->getName(), 'task', $task->getId());
+
         return $this->json($this->taskToArray($task), 201);
     }
 
@@ -125,7 +133,7 @@ class TaskController extends AbstractController
     // PUT — Modifier une tâche
     // =====================
     #[Route('/{id}', methods: ['PUT'])]
-    public function update(int $id, Request $request, EntityManagerInterface $em, PermissionService $permissions): JsonResponse
+    public function update(int $id, Request $request, EntityManagerInterface $em, PermissionService $permissions, ActionLogService $actionLog): JsonResponse
     {
         // Dev, manager et admin peuvent modifier une tâche
         if (!$permissions->canEditTask()) {
@@ -152,6 +160,11 @@ class TaskController extends AbstractController
 
         $em->flush();
 
+        // =====================
+        // Log de l'action — enregistre la modification dans l'historique
+        // =====================
+        $actionLog->log('update_task', 'Tâche modifiée : ' . $task->getName(), 'task', $task->getId());
+
         return $this->json($this->taskToArray($task));
     }
 
@@ -159,7 +172,7 @@ class TaskController extends AbstractController
     // DELETE — Supprimer une tâche
     // =====================
     #[Route('/{id}', methods: ['DELETE'])]
-    public function delete(int $id, EntityManagerInterface $em, PermissionService $permissions): JsonResponse
+    public function delete(int $id, EntityManagerInterface $em, PermissionService $permissions, ActionLogService $actionLog): JsonResponse
     {
         // Manager et admin peuvent supprimer une tâche
         if (!$permissions->canDeleteTask()) {
@@ -172,6 +185,11 @@ class TaskController extends AbstractController
         }
 
         $em->remove($task);
+
+        // =====================
+        // Log de l'action — enregistre la suppression AVANT de supprimer
+        // =====================
+        $actionLog->log('delete_task', 'Tâche supprimée : ' . $task->getName(), 'task', $id);
         $em->flush();
 
         return $this->json(['message' => 'Tâche supprimée avec succès']);

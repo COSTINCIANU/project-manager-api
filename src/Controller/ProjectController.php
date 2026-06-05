@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Service\ActionLogService;
 
 #[Route('/api/projects')]
 class ProjectController extends AbstractController
@@ -47,7 +48,7 @@ class ProjectController extends AbstractController
     // POST — Créer un nouveau projet
     // =====================
     #[Route('', methods: ['POST'])]
-    public function create(Request $request, EntityManagerInterface $em, PermissionService $permissions): JsonResponse
+    public function create(Request $request, EntityManagerInterface $em, PermissionService $permissions, ActionLogService $actionLog): JsonResponse
     {
         // Seuls manager et admin peuvent créer un projet
         if (!$permissions->canCreateProject()) {
@@ -62,8 +63,16 @@ class ProjectController extends AbstractController
         $project->setColor($data['color']);
         $project->setProgress($data['progress'] ?? 0);
 
+        // =====================
+        // On sauvegarde dans la base de données
+        // =====================
         $em->persist($project);
         $em->flush();
+
+        // =====================
+        // Log de l'action — enregistre la création dans l'historique
+        // =====================
+        $actionLog->log('create_project', 'Projet créé : ' . $project->getName(), 'project', $project->getId());
 
         return $this->json([
             'id' => $project->getId(),
@@ -78,9 +87,8 @@ class ProjectController extends AbstractController
     // PUT — Modifier un projet
     // =====================
     #[Route('/{id}', methods: ['PUT'])]
-    public function update(int $id, Request $request, EntityManagerInterface $em, PermissionService $permissions): JsonResponse
+    public function update(int $id, Request $request, EntityManagerInterface $em, PermissionService $permissions, ActionLogService $actionLog): JsonResponse
     {
-        // Seuls manager et admin peuvent modifier un projet
         if (!$permissions->canEditProject()) {
             return $this->json(['error' => 'Accès refusé — rôle manager ou admin requis'], 403);
         }
@@ -99,6 +107,11 @@ class ProjectController extends AbstractController
 
         $em->flush();
 
+        // =====================
+        // Log de l'action — enregistre la modification dans l'historique
+        // =====================
+        $actionLog->log('update_project', 'Projet modifié : ' . $project->getName(), 'project', $project->getId());
+
         return $this->json([
             'id' => $project->getId(),
             'name' => $project->getName(),
@@ -112,9 +125,8 @@ class ProjectController extends AbstractController
     // DELETE — Supprimer un projet
     // =====================
     #[Route('/{id}', methods: ['DELETE'])]
-    public function delete(int $id, EntityManagerInterface $em, PermissionService $permissions): JsonResponse
+    public function delete(int $id, EntityManagerInterface $em, PermissionService $permissions, ActionLogService $actionLog): JsonResponse
     {
-        // Seul admin peut supprimer un projet
         if (!$permissions->canDeleteProject()) {
             return $this->json(['error' => 'Accès refusé — rôle admin requis'], 403);
         }
@@ -124,6 +136,12 @@ class ProjectController extends AbstractController
         if (!$project) {
             return $this->json(['error' => 'Projet non trouvé'], 404);
         }
+
+        // =====================
+        // Log de l'action — enregistre la suppression AVANT de supprimer
+        // car après on n'a plus accès au nom du projet
+        // =====================
+        $actionLog->log('delete_project', 'Projet supprimé : ' . $project->getName(), 'project', $id);
 
         $em->remove($project);
         $em->flush();
