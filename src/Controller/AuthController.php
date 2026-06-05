@@ -84,6 +84,14 @@ class AuthController extends AbstractController
             return $this->json(['error' => 'Email ou mot de passe incorrect'], 401);
         }
 
+        // Si le 2FA est activé — on ne retourne pas encore le token
+        if ($user->isTwoFactorEnabled()) {
+            return $this->json([
+                'twoFactorRequired' => true,
+                'email' => $user->getEmail(),
+            ]);
+        }
+
         $token = $jwtManager->create($user);
 
         return $this->json([
