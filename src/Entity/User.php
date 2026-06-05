@@ -51,6 +51,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $resetToken = null;
 
+    // Code 2FA par email
+    #[ORM\Column(length: 10, nullable: true)]
+    private ?string $twoFactorCode = null;
+
+    // Expiration du code 2FA
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $twoFactorExpiresAt = null;
+
+    // 2FA activé ou non
+    #[ORM\Column(type: 'boolean')]
+    private bool $twoFactorEnabled = false;
+
     // Expiration du token de réinitialisation
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $resetTokenExpiry = null;
@@ -98,6 +110,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getResetTokenExpiry(): ?\DateTimeInterface { return $this->resetTokenExpiry; }
     public function setResetTokenExpiry(?\DateTimeInterface $expiry): static { $this->resetTokenExpiry = $expiry; return $this; }
+
+    public function getTwoFactorCode(): ?string { return $this->twoFactorCode; }
+    public function setTwoFactorCode(?string $code): static { $this->twoFactorCode = $code; return $this; }
+
+    public function getTwoFactorExpiresAt(): ?\DateTimeInterface { return $this->twoFactorExpiresAt; }
+    public function setTwoFactorExpiresAt(?\DateTimeInterface $expiresAt): static { $this->twoFactorExpiresAt = $expiresAt; return $this; }
+
+    public function isTwoFactorEnabled(): bool { return $this->twoFactorEnabled; }
+    public function setTwoFactorEnabled(bool $enabled): static { $this->twoFactorEnabled = $enabled; return $this; }
 
     public function __serialize(): array
     {
