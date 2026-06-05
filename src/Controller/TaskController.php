@@ -1,9 +1,18 @@
 <?php
+// =====================================================
+// TaskController.php — Gestion des tâches
+// Permissions selon le rôle métier :
+// - GET : tous les rôles
+// - POST : dev, manager et admin
+// - PUT : dev (ses tâches), manager et admin (toutes)
+// - DELETE : manager et admin
+// =====================================================
 
 namespace App\Controller;
 
 use App\Entity\Task;
 use App\Entity\SubTask;
+use App\Service\PermissionService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -50,6 +59,7 @@ class TaskController extends AbstractController
     #[Route('', methods: ['GET'])]
     public function index(EntityManagerInterface $em): JsonResponse
     {
+        // Tous les rôles peuvent voir les tâches
         $tasks = $em->getRepository(Task::class)->findAll();
         $data = array_map(fn($task) => $this->taskToArray($task), $tasks);
         return $this->json($data);
@@ -72,8 +82,13 @@ class TaskController extends AbstractController
     // POST — Créer une nouvelle tâche
     // =====================
     #[Route('', methods: ['POST'])]
-    public function create(Request $request, EntityManagerInterface $em): JsonResponse
+    public function create(Request $request, EntityManagerInterface $em, PermissionService $permissions): JsonResponse
     {
+        // Dev, manager et admin peuvent créer une tâche
+        if (!$permissions->canCreateTask()) {
+            return $this->json(['error' => 'Accès refusé — rôle dev ou supérieur requis'], 403);
+        }
+
         $data = json_decode($request->getContent(), true);
 
         $task = new Task();
@@ -110,8 +125,13 @@ class TaskController extends AbstractController
     // PUT — Modifier une tâche
     // =====================
     #[Route('/{id}', methods: ['PUT'])]
-    public function update(int $id, Request $request, EntityManagerInterface $em): JsonResponse
+    public function update(int $id, Request $request, EntityManagerInterface $em, PermissionService $permissions): JsonResponse
     {
+        // Dev, manager et admin peuvent modifier une tâche
+        if (!$permissions->canEditTask()) {
+            return $this->json(['error' => 'Accès refusé — rôle dev ou supérieur requis'], 403);
+        }
+
         $task = $em->getRepository(Task::class)->find($id);
         if (!$task) {
             return $this->json(['error' => 'Tâche non trouvée'], 404);
@@ -139,8 +159,13 @@ class TaskController extends AbstractController
     // DELETE — Supprimer une tâche
     // =====================
     #[Route('/{id}', methods: ['DELETE'])]
-    public function delete(int $id, EntityManagerInterface $em): JsonResponse
+    public function delete(int $id, EntityManagerInterface $em, PermissionService $permissions): JsonResponse
     {
+        // Manager et admin peuvent supprimer une tâche
+        if (!$permissions->canDeleteTask()) {
+            return $this->json(['error' => 'Accès refusé — rôle manager ou admin requis'], 403);
+        }
+
         $task = $em->getRepository(Task::class)->find($id);
         if (!$task) {
             return $this->json(['error' => 'Tâche non trouvée'], 404);
@@ -156,8 +181,12 @@ class TaskController extends AbstractController
     // POST — Ajouter une sous-tâche
     // =====================
     #[Route('/{id}/subtasks', methods: ['POST'])]
-    public function addSubTask(int $id, Request $request, EntityManagerInterface $em): JsonResponse
+    public function addSubTask(int $id, Request $request, EntityManagerInterface $em, PermissionService $permissions): JsonResponse
     {
+        if (!$permissions->canEditTask()) {
+            return $this->json(['error' => 'Accès refusé'], 403);
+        }
+
         $task = $em->getRepository(Task::class)->find($id);
         if (!$task) {
             return $this->json(['error' => 'Tâche non trouvée'], 404);
@@ -183,8 +212,12 @@ class TaskController extends AbstractController
     // PUT — Modifier une sous-tâche
     // =====================
     #[Route('/subtasks/{id}', methods: ['PUT'])]
-    public function updateSubTask(int $id, Request $request, EntityManagerInterface $em): JsonResponse
+    public function updateSubTask(int $id, Request $request, EntityManagerInterface $em, PermissionService $permissions): JsonResponse
     {
+        if (!$permissions->canEditTask()) {
+            return $this->json(['error' => 'Accès refusé'], 403);
+        }
+
         $subTask = $em->getRepository(SubTask::class)->find($id);
         if (!$subTask) {
             return $this->json(['error' => 'Sous-tâche non trouvée'], 404);
@@ -207,8 +240,12 @@ class TaskController extends AbstractController
     // DELETE — Supprimer une sous-tâche
     // =====================
     #[Route('/subtasks/{id}', methods: ['DELETE'])]
-    public function deleteSubTask(int $id, EntityManagerInterface $em): JsonResponse
+    public function deleteSubTask(int $id, EntityManagerInterface $em, PermissionService $permissions): JsonResponse
     {
+        if (!$permissions->canDeleteTask()) {
+            return $this->json(['error' => 'Accès refusé'], 403);
+        }
+
         $subTask = $em->getRepository(SubTask::class)->find($id);
         if (!$subTask) {
             return $this->json(['error' => 'Sous-tâche non trouvée'], 404);

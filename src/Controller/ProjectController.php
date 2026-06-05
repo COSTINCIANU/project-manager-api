@@ -1,8 +1,17 @@
 <?php
+// =====================================================
+// ProjectController.php — Gestion des projets
+// Permissions selon le rôle métier :
+// - GET : tous les rôles
+// - POST : manager et admin
+// - PUT : manager et admin
+// - DELETE : admin uniquement
+// =====================================================
 
 namespace App\Controller;
 
 use App\Entity\Project;
+use App\Service\PermissionService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,10 +27,9 @@ class ProjectController extends AbstractController
     #[Route('', methods: ['GET'])]
     public function index(EntityManagerInterface $em): JsonResponse
     {
-        // On récupère tous les projets depuis la base de données
+        // Tous les rôles peuvent voir les projets
         $projects = $em->getRepository(Project::class)->findAll();
 
-        // On convertit les projets en tableau pour les envoyer en JSON
         $data = array_map(function($project) {
             return [
                 'id' => $project->getId(),
@@ -39,19 +47,21 @@ class ProjectController extends AbstractController
     // POST — Créer un nouveau projet
     // =====================
     #[Route('', methods: ['POST'])]
-    public function create(Request $request, EntityManagerInterface $em): JsonResponse
+    public function create(Request $request, EntityManagerInterface $em, PermissionService $permissions): JsonResponse
     {
-        // On récupère les données envoyées par React
+        // Seuls manager et admin peuvent créer un projet
+        if (!$permissions->canCreateProject()) {
+            return $this->json(['error' => 'Accès refusé — rôle manager ou admin requis'], 403);
+        }
+
         $data = json_decode($request->getContent(), true);
 
-        // On crée un nouveau projet
         $project = new Project();
         $project->setName($data['name']);
         $project->setStatus($data['status']);
         $project->setColor($data['color']);
         $project->setProgress($data['progress'] ?? 0);
 
-        // On sauvegarde dans la base de données
         $em->persist($project);
         $em->flush();
 
@@ -68,24 +78,25 @@ class ProjectController extends AbstractController
     // PUT — Modifier un projet
     // =====================
     #[Route('/{id}', methods: ['PUT'])]
-    public function update(int $id, Request $request, EntityManagerInterface $em): JsonResponse
+    public function update(int $id, Request $request, EntityManagerInterface $em, PermissionService $permissions): JsonResponse
     {
-        // On cherche le projet par son id
+        // Seuls manager et admin peuvent modifier un projet
+        if (!$permissions->canEditProject()) {
+            return $this->json(['error' => 'Accès refusé — rôle manager ou admin requis'], 403);
+        }
+
         $project = $em->getRepository(Project::class)->find($id);
 
-        // Si le projet n'existe pas on retourne une erreur
         if (!$project) {
             return $this->json(['error' => 'Projet non trouvé'], 404);
         }
 
-        // On met à jour les données
         $data = json_decode($request->getContent(), true);
         $project->setName($data['name'] ?? $project->getName());
         $project->setStatus($data['status'] ?? $project->getStatus());
         $project->setColor($data['color'] ?? $project->getColor());
         $project->setProgress($data['progress'] ?? $project->getProgress());
 
-        // On sauvegarde les modifications
         $em->flush();
 
         return $this->json([
@@ -101,17 +112,19 @@ class ProjectController extends AbstractController
     // DELETE — Supprimer un projet
     // =====================
     #[Route('/{id}', methods: ['DELETE'])]
-    public function delete(int $id, EntityManagerInterface $em): JsonResponse
+    public function delete(int $id, EntityManagerInterface $em, PermissionService $permissions): JsonResponse
     {
-        // On cherche le projet par son id
+        // Seul admin peut supprimer un projet
+        if (!$permissions->canDeleteProject()) {
+            return $this->json(['error' => 'Accès refusé — rôle admin requis'], 403);
+        }
+
         $project = $em->getRepository(Project::class)->find($id);
 
-        // Si le projet n'existe pas on retourne une erreur
         if (!$project) {
             return $this->json(['error' => 'Projet non trouvé'], 404);
         }
 
-        // On supprime le projet
         $em->remove($project);
         $em->flush();
 
