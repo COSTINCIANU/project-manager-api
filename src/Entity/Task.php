@@ -48,6 +48,10 @@ class Task
     #[ORM\Column(nullable: true)]
     private ?int $assignedTo = null;
 
+    // ID de la tâche dont celle-ci dépend (bloquante)
+    #[ORM\Column(nullable: true)]
+    private ?int $dependsOn = null;
+
     #[ORM\OneToMany(mappedBy: 'task', targetEntity: SubTask::class, cascade: ['persist', 'remove'])]
     private Collection $subTasks;
 
@@ -98,6 +102,9 @@ class Task
 
     public function getAssignedTo(): ?int { return $this->assignedTo; }
     public function setAssignedTo(?int $assignedTo): static { $this->assignedTo = $assignedTo; return $this; }
+
+    public function getDependsOn(): ?int { return $this->dependsOn; }
+    public function setDependsOn(?int $dependsOn): static { $this->dependsOn = $dependsOn; return $this; }
 
     public function getSubTasks(): Collection { return $this->subTasks; }
     public function getComments(): Collection { return $this->comments; }

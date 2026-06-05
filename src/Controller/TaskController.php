@@ -52,6 +52,7 @@ class TaskController extends AbstractController
             'elapsedTime' => $task->getElapsedTime(),
             'tags' => $task->getTags() ?? [],
             'assignedTo' => $task->getAssignedTo(),
+            'dependsOn' => $task->getDependsOn(),
             'subTasks' => $subTasks,
         ];
     }
@@ -106,6 +107,8 @@ class TaskController extends AbstractController
         $task->setElapsedTime($data['elapsedTime'] ?? 0);
         $task->setTags($data['tags'] ?? []);
         $task->setAssignedTo($data['assignedTo'] ?? null);
+        // Dépendance — ID de la tâche bloquante
+        $task->setDependsOn($data['dependsOn'] ?? null);
 
         // Sous-tâches
         if (!empty($data['subTasks'])) {
@@ -157,6 +160,8 @@ class TaskController extends AbstractController
         $task->setElapsedTime($data['elapsedTime'] ?? $task->getElapsedTime());
         $task->setTags($data['tags'] ?? $task->getTags());
         $task->setAssignedTo($data['assignedTo'] ?? $task->getAssignedTo());
+        // Dépendance — ID de la tâche bloquante
+        $task->setDependsOn($data['dependsOn'] ?? $task->getDependsOn());
 
         $em->flush();
 
