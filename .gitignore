@@ -17,6 +17,8 @@ var/
 
 note.txt
 /note.txt
+.env.production
+/.env.production
 
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
