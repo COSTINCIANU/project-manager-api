@@ -24,7 +24,7 @@ security:
 
         # Firewall pour les routes publiques (login, register, forgot, reset, oauth, 2fa)
         api_public:
-            pattern: ^/api/auth
+            pattern: ^/api/(auth|push/send|push/vapid-key)
             stateless: true
             security: false
 
