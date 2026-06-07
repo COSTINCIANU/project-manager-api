@@ -53,6 +53,7 @@ class TaskController extends AbstractController
             'tags' => $task->getTags() ?? [],
             'assignedTo' => $task->getAssignedTo(),
             'dependsOn' => $task->getDependsOn(),
+            'externalLink' => $task->getExternalLink(),
             'subTasks' => $subTasks,
         ];
     }
@@ -109,6 +110,8 @@ class TaskController extends AbstractController
         $task->setAssignedTo($data['assignedTo'] ?? null);
         // Dépendance — ID de la tâche bloquante
         $task->setDependsOn($data['dependsOn'] ?? null);
+        // Lien externe Google Drive / Dropbox
+        $task->setExternalLink($data['externalLink'] ?? null);
 
         // Sous-tâches
         if (!empty($data['subTasks'])) {
@@ -162,6 +165,8 @@ class TaskController extends AbstractController
         $task->setAssignedTo($data['assignedTo'] ?? $task->getAssignedTo());
         // Dépendance — ID de la tâche bloquante
         $task->setDependsOn($data['dependsOn'] ?? $task->getDependsOn());
+        // Lien externe Google Drive / Dropbox
+        $task->setExternalLink($data['externalLink'] ?? $task->getExternalLink());
 
         $em->flush();
 

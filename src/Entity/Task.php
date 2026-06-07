@@ -52,6 +52,11 @@ class Task
     #[ORM\Column(nullable: true)]
     private ?int $dependsOn = null;
 
+    // Lien externe — Google Drive, Dropbox, etc.
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $externalLink = null;
+
+
     #[ORM\OneToMany(mappedBy: 'task', targetEntity: SubTask::class, cascade: ['persist', 'remove'])]
     private Collection $subTasks;
 
@@ -105,6 +110,11 @@ class Task
 
     public function getDependsOn(): ?int { return $this->dependsOn; }
     public function setDependsOn(?int $dependsOn): static { $this->dependsOn = $dependsOn; return $this; }
+
+
+    public function getExternalLink(): ?string { return $this->externalLink; }
+    public function setExternalLink(?string $externalLink): static { $this->externalLink = $externalLink; return $this; }
+
 
     public function getSubTasks(): Collection { return $this->subTasks; }
     public function getComments(): Collection { return $this->comments; }
