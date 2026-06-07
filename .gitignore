@@ -6,6 +6,8 @@
 /.env.local
 /.env.local.php
 /.env.*.local
+.env.production
+/.env.production
 
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
@@ -17,8 +19,10 @@ var/
 
 note.txt
 /note.txt
-.env.production
-/.env.production
+
+plan_dev.txt
+/plan_dev.txt
+
 
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem

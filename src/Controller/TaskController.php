@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Service\ActionLogService;
+use App\Service\SlackService;
 
 
 
@@ -87,7 +88,7 @@ class TaskController extends AbstractController
     // POST — Créer une nouvelle tâche
     // =====================
     #[Route('', methods: ['POST'])]
-    public function create(Request $request, EntityManagerInterface $em, PermissionService $permissions, ActionLogService $actionLog): JsonResponse
+    public function create(Request $request, EntityManagerInterface $em, PermissionService $permissions, ActionLogService $actionLog, SlackService $slack): JsonResponse
     {
         // Dev, manager et admin peuvent créer une tâche
         if (!$permissions->canCreateTask()) {
@@ -132,6 +133,16 @@ class TaskController extends AbstractController
         // =====================
         $actionLog->log('create_task', 'Tâche créée : ' . $task->getName(), 'task', $task->getId());
 
+
+        // =====================
+        // Notification Slack — nouvelle tâche créée
+        // =====================
+        $slack->notifyTaskCreated(
+            $task->getName(),
+            'Projet #' . $task->getProjectId(),
+            $task->getPriority() ?? 'normale',
+            $this->getUser()->getUserIdentifier(),
+        );
         return $this->json($this->taskToArray($task), 201);
     }
 
