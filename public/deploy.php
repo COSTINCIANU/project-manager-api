@@ -4,9 +4,11 @@
 // Appelé par GitHub Actions pour déployer le backend
 // =====================================================
 
-// Vérification du token de sécurité
+// Token hardcodé — à changer si compromis
+$expectedToken = 'pm_deploy_secret_2026';
+
+// Vérification du token
 $token = $_SERVER['HTTP_X_DEPLOY_TOKEN'] ?? '';
-$expectedToken = getenv('DEPLOY_TOKEN') ?: 'change_me_deploy_token';
 
 if ($token !== $expectedToken) {
     http_response_code(403);
@@ -16,7 +18,7 @@ if ($token !== $expectedToken) {
 // Exécution du déploiement
 $output = [];
 exec('cd /home/xena8933/public_html/project-manager-api && git pull origin master 2>&1', $output);
-exec('cd /home/xena8933/public_html/project-manager-api && php bin/console cache:clear 2>&1', $output);
+exec('cd /home/xena8933/public_html/project-manager-api && php bin/console cache:clear --env=prod 2>&1', $output);
 
 echo json_encode([
     'success' => true,
