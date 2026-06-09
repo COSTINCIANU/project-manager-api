@@ -67,6 +67,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $resetTokenExpiry = null;
 
+    // Plan de l'utilisateur (free, pro, enterprise)
+    #[ORM\Column(length: 20)]
+    private string $plan = 'free';
+
+    // Compte actif ou non
+    #[ORM\Column(type: 'boolean')]
+    private bool $isActive = true;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -119,6 +127,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function isTwoFactorEnabled(): bool { return $this->twoFactorEnabled; }
     public function setTwoFactorEnabled(bool $enabled): static { $this->twoFactorEnabled = $enabled; return $this; }
+
+    public function getPlan(): string { return $this->plan; }
+    public function setPlan(string $plan): static { $this->plan = $plan; return $this; }
+
+    public function getIsActive(): bool { return $this->isActive; }
+    public function setIsActive(bool $isActive): static { $this->isActive = $isActive; return $this; }
+
+
+
 
     public function __serialize(): array
     {
