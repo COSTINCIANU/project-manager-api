@@ -23,7 +23,13 @@ note.txt
 plan_dev.txt
 /plan_dev.txt
 
+note-api.txt
+/note-api.txt
+
+infos.txt
+/infos.txt
 
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
+note.-api.txt
