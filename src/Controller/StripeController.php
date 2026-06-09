@@ -7,12 +7,16 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+
+
+use Stripe\Checkout\Session;
+use Stripe\Stripe;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
-use Stripe\Stripe;
-use Stripe\Checkout\Session;
 
 #[Route('/api/stripe')]
 class StripeController extends AbstractController
@@ -93,12 +97,13 @@ class StripeController extends AbstractController
         }
     }
 
+
     // =====================
     // POST — Webhook Stripe
     // Reçoit les événements de paiement de Stripe
     // =====================
     #[Route('/webhook', methods: ['POST'])]
-    public function webhook(Request $request): JsonResponse
+    public function webhook(Request $request, EntityManagerInterface $em): JsonResponse
     {
         $payload = $request->getContent();
         $sigHeader = $request->headers->get('Stripe-Signature');
@@ -124,13 +129,23 @@ class StripeController extends AbstractController
                 case 'checkout.session.completed':
                     // Paiement réussi — activer l'abonnement
                     $session = $event->data->object;
-                    $userEmail = $session->metadata->user_email;
-                    $plan = $session->metadata->plan;
-                    // TODO: mettre à jour le plan de l'utilisateur en BDD
+                    $userEmail = $session->metadata->user_email ?? null;
+                    $plan = $session->metadata->plan ?? null;
+
+                    if ($userEmail && $plan) {
+                        $user = $em->getRepository(User::class)->findOneBy(['email' => $userEmail]);
+                        if ($user) {
+                            $user->setPlan($plan);
+                            $em->flush();
+                        }
+                    }
                     break;
 
                 case 'customer.subscription.deleted':
-                    // Abonnement annulé
+                    // Abonnement annulé — repasser en gratuit
+                    $subscription = $event->data->object;
+                    $customerId = $subscription->customer;
+                    // On cherche l'utilisateur par customer_id si stocké
                     break;
             }
 
