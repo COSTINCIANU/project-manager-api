@@ -99,7 +99,7 @@ class AuthController extends AbstractController
             'token' => $token,
             'email' => $user->getEmail(),
             'name' => $user->getName(),
-            'role' => $user->getRole(),
+            'role' => in_array('ROLE_ADMIN', $user->getRoles()) ? 'admin' : $user->getRole(),
             'avatar' => $user->getAvatar(),
             'id' => $user->getId(),
         ]);
@@ -122,7 +122,7 @@ class AuthController extends AbstractController
             'id' => $user->getId(),
             'email' => $user->getEmail(),
             'name' => $user->getName(),
-            'role' => $user->getRole(),
+            'role' => in_array('ROLE_ADMIN', $user->getRoles()) ? 'admin' : $user->getRole(),
             'avatar' => $user->getAvatar(),
             'createdAt' => $user->getCreatedAt()->format('Y-m-d'),
         ]);
