@@ -1,19 +1,8 @@
 <?php
 // =====================================================
-// ChatController.php — Chat d'équipe
-// Gère les messages de chat avec polling
-//
-// MIGRATION WEBSOCKET FUTURE :
-// 1. installer Mercure : composer require symfony/mercure-bundle
-// 2. Publier sur le hub Mercure dans la méthode create()
-// 3. Côté React : remplacer le polling par EventSource
-//
-// Exemple publication Mercure :
-// $update = new Update(
-//     'https://project-manager.costincianu.fr/chat',
-//     json_encode(['message' => $data])
-// );
-// $this->hub->publish($update);
+// ChatController.php — Chat d'équipe temps réel
+// Gère les messages de chat via Mercure (WebSocket)
+// Plus de polling — les messages arrivent en temps réel !
 // =====================================================
 
 namespace App\Controller;
@@ -24,18 +13,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Mercure\Update;
 
 #[Route('/api/chat')]
 class ChatController extends AbstractController
 {
     // =====================
     // GET — Récupérer les 50 derniers messages
-    // Polling toutes les 5 secondes côté React
+    // Utilisé au chargement initial de la page
     // =====================
     #[Route('', methods: ['GET'])]
     public function index(EntityManagerInterface $em): JsonResponse
     {
-        // On récupère les 50 derniers messages triés par date croissante
         $messages = $em->getRepository(ChatMessage::class)->findBy(
             [],
             ['createdAt' => 'ASC'],
@@ -57,9 +47,10 @@ class ChatController extends AbstractController
 
     // =====================
     // POST — Envoyer un message
+    // Publie en temps réel via Mercure
     // =====================
     #[Route('', methods: ['POST'])]
-    public function create(Request $request, EntityManagerInterface $em): JsonResponse
+    public function create(Request $request, EntityManagerInterface $em, HubInterface $hub): JsonResponse
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
@@ -74,7 +65,7 @@ class ChatController extends AbstractController
             return $this->json(['error' => 'Message vide'], 400);
         }
 
-        // On crée le message
+        // On crée le message en BDD
         $message = new ChatMessage();
         $message->setContent($data['content']);
         $message->setSenderEmail($user->getEmail());
@@ -83,13 +74,30 @@ class ChatController extends AbstractController
         $em->persist($message);
         $em->flush();
 
-        return $this->json([
+        $messageData = [
             'id' => $message->getId(),
             'content' => $message->getContent(),
             'senderEmail' => $message->getSenderEmail(),
             'senderName' => $message->getSenderName(),
             'createdAt' => $message->getCreatedAt()->format('Y-m-d H:i:s'),
-        ], 201);
+        ];
+
+        // =====================
+        // Publication Mercure — temps réel !
+        // Tous les abonnés au topic "chat" reçoivent le message instantanément
+        // =====================
+        try {
+            $update = new Update(
+                'https://project-manager.costincianu.fr/chat',
+                json_encode($messageData)
+            );
+            $hub->publish($update);
+        } catch (\Exception $e) {
+            // Si Mercure échoue, le message est quand même sauvegardé en BDD
+            // Le polling de secours récupérera le message
+        }
+
+        return $this->json($messageData, 201);
     }
 
     // =====================
