@@ -82,6 +82,23 @@ class TaskController extends AbstractController
         return $this->json($data);
     }
 
+
+    // =====================
+    // GET — Récupérer une tâche par son ID
+    // =====================
+    #[Route('/{id}', methods: ['GET'])]
+    public function show(int $id, EntityManagerInterface $em): JsonResponse
+    {
+        // Cherche la tache par son ID
+        $task = $em->getRepository(Task::class)->find($id);
+
+        if (!$task) {
+            return $this->json(['error' => 'Tâche non trouvée'], 404);
+        }
+
+        return $this->json($this->taskToArray($task));
+    }
+
     // =====================
     // POST — Créer une nouvelle tâche
     // =====================
