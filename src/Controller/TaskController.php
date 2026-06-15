@@ -61,27 +61,25 @@ class TaskController extends AbstractController
 
     // =====================
     // GET — Récupérer toutes les tâches
+    // Filtre par projectId si fourni dans l'URL (?projectId=1)
     // =====================
     #[Route('', methods: ['GET'])]
-    public function index(EntityManagerInterface $em): JsonResponse
+    public function index(Request $request, EntityManagerInterface $em): JsonResponse
     {
         // Tous les rôles peuvent voir les tâches
-        $tasks = $em->getRepository(Task::class)->findAll();
+        // Si projectId est fourni dans la query string, on filtre par projet
+        $projectId = $request->query->get('projectId');
+
+        if ($projectId) {
+            // Filtre les tâches par projet
+            $tasks = $em->getRepository(Task::class)->findBy(['projectId' => (int)$projectId]);
+        } else {
+            // Retourne toutes les tâches si pas de filtre
+            $tasks = $em->getRepository(Task::class)->findAll();
+        }
+
         $data = array_map(fn($task) => $this->taskToArray($task), $tasks);
         return $this->json($data);
-    }
-
-    // =====================
-    // GET — Récupérer une tâche par son id
-    // =====================
-    #[Route('/{id}', methods: ['GET'])]
-    public function show(int $id, EntityManagerInterface $em): JsonResponse
-    {
-        $task = $em->getRepository(Task::class)->find($id);
-        if (!$task) {
-            return $this->json(['error' => 'Tâche non trouvée'], 404);
-        }
-        return $this->json($this->taskToArray($task));
     }
 
     // =====================
