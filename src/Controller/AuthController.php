@@ -1,8 +1,8 @@
 <?php
 // =====================================================
 // AuthController.php — Authentification
-// Gère l'inscription, connexion, profil
-// et réinitialisation du mot de passe
+// Gère l'inscription, connexion, profil,
+// réinitialisation du mot de passe et refresh token
 // =====================================================
 
 namespace App\Controller;
@@ -45,12 +45,10 @@ class AuthController extends AbstractController
         $user->setEmail($data['email']);
         $user->setPassword($hasher->hashPassword($user, $data['password']));
 
-        // Nom optionnel à l'inscription
         if (!empty($data['name'])) {
             $user->setName($data['name']);
         }
 
-        // Rôle par défaut : dev
         $user->setRole($data['role'] ?? 'dev');
 
         $em->persist($user);
@@ -64,6 +62,7 @@ class AuthController extends AbstractController
 
     // =====================
     // POST — Connexion
+    // Retourne maintenant aussi le refresh token
     // =====================
     #[Route('/login', methods: ['POST'])]
     public function login(
@@ -84,7 +83,6 @@ class AuthController extends AbstractController
             return $this->json(['error' => 'Email ou mot de passe incorrect'], 401);
         }
 
-        // Si le 2FA est activé — on ne retourne pas encore le token
         if ($user->isTwoFactorEnabled()) {
             return $this->json([
                 'twoFactorRequired' => true,
@@ -92,16 +90,76 @@ class AuthController extends AbstractController
             ]);
         }
 
+        // Génération du JWT (valide 1h par défaut lexik)
         $token = $jwtManager->create($user);
+
+        // Génération du refresh token (token aléatoire valide 7 jours)
+        $refreshToken = bin2hex(random_bytes(32));
+        $user->setRefreshToken($refreshToken);
+        $user->setRefreshTokenExpiry(new \DateTime('+7 days'));
+        $em->flush();
 
         return $this->json([
             'message' => 'Connexion réussie !',
             'token' => $token,
+            'refreshToken' => $refreshToken,
             'email' => $user->getEmail(),
             'name' => $user->getName(),
             'role' => in_array('ROLE_ADMIN', $user->getRoles()) ? 'admin' : $user->getRole(),
             'avatar' => $user->getAvatar(),
             'id' => $user->getId(),
+        ]);
+    }
+
+    // =====================
+    // POST — Renouvellement du JWT
+    // Le mobile envoie son refresh token
+    // On retourne un nouveau JWT si valide
+    // =====================
+    #[Route('/refresh', methods: ['POST'])]
+    public function refresh(
+        Request $request,
+        EntityManagerInterface $em,
+        JWTTokenManagerInterface $jwtManager
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true);
+
+        // Vérification que le refresh token est bien présent
+        if (empty($data['refreshToken'])) {
+            return $this->json(['error' => 'Refresh token requis'], 400);
+        }
+
+        // On cherche l'utilisateur par son refresh token
+        $user = $em->getRepository(User::class)->findOneBy([
+            'refreshToken' => $data['refreshToken']
+        ]);
+
+        // Token inconnu ou expiré
+        if (!$user) {
+            return $this->json(['error' => 'Refresh token invalide'], 401);
+        }
+
+        // Vérification de la date d'expiration (7 jours)
+        if ($user->getRefreshTokenExpiry() < new \DateTime()) {
+            // On efface le token expiré pour forcer une reconnexion
+            $user->setRefreshToken(null);
+            $user->setRefreshTokenExpiry(null);
+            $em->flush();
+            return $this->json(['error' => 'Refresh token expiré, veuillez vous reconnecter'], 401);
+        }
+
+        // Tout est OK — on génère un nouveau JWT
+        $newToken = $jwtManager->create($user);
+
+        // On renouvelle aussi le refresh token (rotation sécurité)
+        $newRefreshToken = bin2hex(random_bytes(32));
+        $user->setRefreshToken($newRefreshToken);
+        $user->setRefreshTokenExpiry(new \DateTime('+7 days'));
+        $em->flush();
+
+        return $this->json([
+            'token' => $newToken,
+            'refreshToken' => $newRefreshToken,
         ]);
     }
 
@@ -146,17 +204,14 @@ class AuthController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        // Mise à jour du nom
         if (isset($data['name'])) {
             $user->setName($data['name']);
         }
 
-        // Mise à jour du rôle
         if (isset($data['role'])) {
             $user->setRole($data['role']);
         }
 
-        // Mise à jour du mot de passe
         if (!empty($data['password'])) {
             $user->setPassword($hasher->hashPassword($user, $data['password']));
         }
@@ -190,21 +245,17 @@ class AuthController extends AbstractController
 
         $user = $em->getRepository(User::class)->findOneBy(['email' => $data['email']]);
 
-        // On ne révèle pas si l'email existe ou non (sécurité)
         if (!$user) {
             return $this->json(['message' => 'Si cet email existe, un lien a été envoyé.']);
         }
 
-        // Génère un token unique valable 1 heure
         $token = bin2hex(random_bytes(32));
         $user->setResetToken($token);
         $user->setResetTokenExpiry(new \DateTime('+1 hour'));
         $em->flush();
 
-        // Lien de réinitialisation
         $resetLink = "https://project-manager.costincianu.fr/reset-password?token=" . $token;
 
-        // Envoi de l'email
         $email = (new Email())
             ->from('contact@costincianu.fr')
             ->to($user->getEmail())
@@ -229,9 +280,7 @@ class AuthController extends AbstractController
 
         $mailer->send($email);
 
-        return $this->json([
-            'message' => 'Un email de réinitialisation a été envoyé !',
-        ]);
+        return $this->json(['message' => 'Un email de réinitialisation a été envoyé !']);
     }
 
     // =====================
@@ -250,28 +299,23 @@ class AuthController extends AbstractController
             return $this->json(['error' => 'Token et mot de passe requis'], 400);
         }
 
-        // On cherche l'utilisateur par son token
         $user = $em->getRepository(User::class)->findOneBy(['resetToken' => $data['token']]);
 
         if (!$user) {
             return $this->json(['error' => 'Token invalide'], 400);
         }
 
-        // On vérifie que le token n'a pas expiré
         if ($user->getResetTokenExpiry() < new \DateTime()) {
             return $this->json(['error' => 'Token expiré'], 400);
         }
 
-        // On met à jour le mot de passe
         $user->setPassword($hasher->hashPassword($user, $data['password']));
         $user->setResetToken(null);
         $user->setResetTokenExpiry(null);
-
         $em->flush();
 
         return $this->json(['message' => 'Mot de passe réinitialisé avec succès !']);
     }
-
 
     // =====================
     // POST — Upload avatar
@@ -288,30 +332,25 @@ class AuthController extends AbstractController
             return $this->json(['error' => 'Non authentifié'], 401);
         }
 
-        // On récupère le fichier uploadé
         $file = $request->files->get('avatar');
 
         if (!$file) {
             return $this->json(['error' => 'Aucun fichier fourni'], 400);
         }
 
-        // On vérifie que c'est bien une image
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (!in_array($file->getMimeType(), $allowedTypes)) {
             return $this->json(['error' => 'Format non supporté. Utilisez JPG, PNG ou GIF'], 400);
         }
 
-        // On génère un nom unique pour le fichier
         $filename = uniqid('avatar_') . '.' . $file->guessExtension();
 
-        // On déplace le fichier dans le dossier public/uploads/avatars/
         $uploadDir = __DIR__ . '/../../public/uploads/avatars/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);
         }
         $file->move($uploadDir, $filename);
 
-        // On supprime l'ancien avatar si il existe
         if ($user->getAvatar()) {
             $oldFile = $uploadDir . basename($user->getAvatar());
             if (file_exists($oldFile)) {
@@ -319,7 +358,6 @@ class AuthController extends AbstractController
             }
         }
 
-        // On sauvegarde le chemin dans la base de données
         $avatarUrl = '/uploads/avatars/' . $filename;
         $user->setAvatar($avatarUrl);
         $em->flush();

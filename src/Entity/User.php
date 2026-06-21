@@ -75,6 +75,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private bool $isActive = true;
 
+
+    // Refresh token — pour renouveler le JWT sans reconnexion
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $refreshToken = null;
+
+    // Expiration du refresh token — valide 7 jours
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $refreshTokenExpiry = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -134,7 +143,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getIsActive(): bool { return $this->isActive; }
     public function setIsActive(bool $isActive): static { $this->isActive = $isActive; return $this; }
 
+    public function getRefreshToken(): ?string { return $this->refreshToken; }
+    public function setRefreshToken(?string $refreshToken): static { $this->refreshToken = $refreshToken; return $this; }
 
+    public function getRefreshTokenExpiry(): ?\DateTimeInterface { return $this->refreshTokenExpiry; }
+    public function setRefreshTokenExpiry(?\DateTimeInterface $expiry): static { $this->refreshTokenExpiry = $expiry; return $this; }
 
 
     public function __serialize(): array
