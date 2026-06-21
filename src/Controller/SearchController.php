@@ -78,12 +78,9 @@ class SearchController extends AbstractController
             ->from(Task::class, 't');
 
         // Filtre par terme de recherche
-        if (!empty($terme)) {
-            $qbTasks->andWhere(
-                $qbTasks->expr()->orX(
-                    $qbTasks->expr()->like('t.name', ':terme'),
-                    $qbTasks->expr()->like('t.description', ':terme')
-                )
+          if (!empty($terme)) {
+            $qbProjects->andWhere(
+                $qbProjects->expr()->like('p.name', ':terme')
             )->setParameter('terme', '%' . $terme . '%');
         }
 
