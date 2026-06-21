@@ -45,6 +45,7 @@ class TaskController extends AbstractController
             'name' => $task->getName(),
             'description' => $task->getDescription(),
             'priority' => $task->getPriority(),
+            'ticketType' => $task->getTicketType() ?? 'task',
             'done' => $task->isDone(),
             'inProgress' => $task->isInProgress(),
             'dueDate' => $task->getDueDate(),
@@ -128,6 +129,7 @@ class TaskController extends AbstractController
         $task->setDependsOn($data['dependsOn'] ?? null);
         // Lien externe Google Drive / Dropbox
         $task->setExternalLink($data['externalLink'] ?? null);
+        $task->setTicketType($data['ticketType'] ?? 'task');
 
         // Sous-tâches
         if (!empty($data['subTasks'])) {
@@ -193,6 +195,8 @@ class TaskController extends AbstractController
         $task->setDependsOn($data['dependsOn'] ?? $task->getDependsOn());
         // Lien externe Google Drive / Dropbox
         $task->setExternalLink($data['externalLink'] ?? $task->getExternalLink());
+        $task->setTicketType($data['ticketType'] ?? $task->getTicketType());
+
 
         $em->flush();
 

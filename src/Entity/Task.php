@@ -24,6 +24,10 @@ class Task
     #[ORM\Column(length: 10, nullable: true)]
     private ?string $priority = null;
 
+    // Type du ticket : task, bug, story, epic
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $ticketType = null;
+
     #[ORM\Column]
     private ?bool $done = null;
 
@@ -83,6 +87,9 @@ class Task
 
     public function getPriority(): ?string { return $this->priority; }
     public function setPriority(?string $priority): static { $this->priority = $priority; return $this; }
+
+    public function getTicketType(): ?string { return $this->ticketType; }
+    public function setTicketType(?string $ticketType): static { $this->ticketType = $ticketType; return $this; }
 
     public function isDone(): ?bool { return $this->done; }
     public function setDone(bool $done): static { $this->done = $done; return $this; }
