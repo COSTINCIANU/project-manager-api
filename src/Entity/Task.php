@@ -56,6 +56,10 @@ class Task
     #[ORM\Column(nullable: true)]
     private ?int $dependsOn = null;
 
+    // Sprint auquel est assignée cette tâche (null = backlog)
+    #[ORM\Column(nullable: true)]
+    private ?int $sprintId = null;
+
     // Lien externe — Google Drive, Dropbox, etc.
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $externalLink = null;
@@ -118,6 +122,8 @@ class Task
     public function getDependsOn(): ?int { return $this->dependsOn; }
     public function setDependsOn(?int $dependsOn): static { $this->dependsOn = $dependsOn; return $this; }
 
+    public function getSprintId(): ?int { return $this->sprintId; }
+    public function setSprintId(?int $sprintId): static { $this->sprintId = $sprintId; return $this; }
 
     public function getExternalLink(): ?string { return $this->externalLink; }
     public function setExternalLink(?string $externalLink): static { $this->externalLink = $externalLink; return $this; }
