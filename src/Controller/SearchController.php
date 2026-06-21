@@ -18,41 +18,26 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/search')]
 class SearchController extends AbstractController
 {
-    // =====================
-    // GET — Recherche globale
-    // Paramètres URL :
-    // ?q=mot          — terme de recherche
-    // ?type=bug       — filtre par type de ticket
-    // ?priority=haute — filtre par priorité
-    // ?status=done    — filtre par statut (todo, in_progress, done)
-    // =====================
     #[Route('', methods: ['GET'])]
     public function search(Request $request, EntityManagerInterface $em): JsonResponse
     {
-        // Récupère les paramètres de recherche
         $terme = $request->query->get('q', '');
         $type = $request->query->get('type', '');
         $priorite = $request->query->get('priority', '');
         $statut = $request->query->get('status', '');
 
-        // Si aucun terme et aucun filtre — retourne vide
         if (empty($terme) && empty($type) && empty($priorite) && empty($statut)) {
             return $this->json(['projects' => [], 'tasks' => [], 'total' => 0]);
         }
 
-        // =====================
-        // Recherche dans les PROJETS
-        // =====================
+        // Recherche dans les PROJETS — uniquement par nom
         $qbProjects = $em->createQueryBuilder()
             ->select('p')
             ->from(Project::class, 'p');
 
         if (!empty($terme)) {
             $qbProjects->andWhere(
-                $qbProjects->expr()->orX(
-                    $qbProjects->expr()->like('p.name', ':terme'),
-                    $qbProjects->expr()->like('p.description', ':terme')
-                )
+                $qbProjects->expr()->like('p.name', ':terme')
             )->setParameter('terme', '%' . $terme . '%');
         }
 
@@ -62,41 +47,38 @@ class SearchController extends AbstractController
             return [
                 'id' => $project->getId(),
                 'name' => $project->getName(),
-                'description' => $project->getDescription(),
+                'description' => null,
                 'status' => $project->getStatus(),
                 'color' => $project->getColor(),
                 'progress' => $project->getProgress(),
-                'type' => 'project', // Pour distinguer dans les résultats
+                'type' => 'project',
             ];
         }, $projets);
 
-        // =====================
         // Recherche dans les TÂCHES
-        // =====================
         $qbTasks = $em->createQueryBuilder()
             ->select('t')
             ->from(Task::class, 't');
 
-        // Filtre par terme de recherche
-          if (!empty($terme)) {
-            $qbProjects->andWhere(
-                $qbProjects->expr()->like('p.name', ':terme')
+        if (!empty($terme)) {
+            $qbTasks->andWhere(
+                $qbTasks->expr()->orX(
+                    $qbTasks->expr()->like('t.name', ':terme'),
+                    $qbTasks->expr()->like('t.description', ':terme')
+                )
             )->setParameter('terme', '%' . $terme . '%');
         }
 
-        // Filtre par type de ticket
         if (!empty($type)) {
             $qbTasks->andWhere('t.ticketType = :type')
                 ->setParameter('type', $type);
         }
 
-        // Filtre par priorité
         if (!empty($priorite)) {
             $qbTasks->andWhere('t.priority = :priorite')
                 ->setParameter('priorite', $priorite);
         }
 
-        // Filtre par statut
         if (!empty($statut)) {
             if ($statut === 'done') {
                 $qbTasks->andWhere('t.done = :done')->setParameter('done', true);
@@ -124,7 +106,7 @@ class SearchController extends AbstractController
                 'inProgress' => $task->isInProgress(),
                 'projectId' => $task->getProjectId(),
                 'dueDate' => $task->getDueDate(),
-                'type' => 'task', // Pour distinguer dans les résultats
+                'type' => 'task',
             ];
         }, $taches);
 
