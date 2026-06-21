@@ -38,3 +38,8 @@ infos.txt
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
 note.-api.txt
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
