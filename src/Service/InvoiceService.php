@@ -130,18 +130,19 @@ class InvoiceService
     <!-- En-tête -->
     <div class='entete'>
         <div class='logo-zone'>
-            <div style='display: flex; align-items: center; gap: 12px;'>
-                <div style='width: 46px; height: 46px; background: #6366F1; transform: rotate(0deg); border-radius: 4px; display: flex; align-items: center; justify-content: center; position: relative;'>
-                    <div style='width: 30px; height: 30px; background: #4F46E5; border-radius: 2px; display: flex; align-items: center; justify-content: center;'>
-                        <div style='width: 10px; height: 10px; background: #ffffff; border-radius: 50%;'></div>
-                    </div>
-                </div>
-                <div>
-                    <div style='font-size: 22px; font-weight: 900; color: #1e1b4b; letter-spacing: -1px; line-height: 1;'>Project Manager</div>
-                    <div style='font-size: 8px; color: #6366F1; letter-spacing: 3px; margin-top: 3px;'>PLATEFORME DE GESTION DE PROJETS</div>
-                    <div style='width: 180px; height: 1px; background: #6366F1; opacity: 0.3; margin-top: 4px;'></div>
-                </div>
-            </div>
+            <table style='border-collapse: collapse;'>
+                <tr>
+                    <td style='width: 50px; vertical-align: middle; padding-right: 12px;'>
+                        <div style='width: 44px; height: 44px; background: #6366F1; border-radius: 4px; text-align: center; line-height: 44px;'>
+                            <div style='width: 16px; height: 16px; background: #ffffff; border-radius: 50%; margin: 14px auto 0;'></div>
+                        </div>
+                    </td>
+                    <td style='vertical-align: middle;'>
+                        <div style='font-size: 22px; font-weight: 900; color: #1e1b4b; letter-spacing: -1px;'>Project Manager</div>
+                        <div style='font-size: 8px; color: #6366F1; letter-spacing: 3px; margin-top: 2px;'>PLATEFORME DE GESTION DE PROJETS</div>
+                    </td>
+                </tr>
+            </table>
 
                 <div style='margin-top: 12px; font-size: 11px; color: #888; line-height: 1.6;'>
                 COSTINCIANU Gheorghina<br>
@@ -222,15 +223,19 @@ class InvoiceService
 
          Pied de page -->
             <div class='pied'>
-            <div style='text-align: center; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;'>
-                <div style='width: 20px; height: 20px; background: #6366F1; border-radius: 3px; display: flex; align-items: center; justify-content: center;'>
-                    <div style='width: 8px; height: 8px; background: #ffffff; border-radius: 50%;'></div>
-                </div>
-                <div>
-                    <span style='font-size: 11px; font-weight: 800; color: #1e1b4b;'>Project Manager</span>
-                    <span style='font-size: 7px; color: #6366F1; letter-spacing: 2px; margin-left: 4px;'>SAAS</span>
-                </div>
-            </div>
+            <table style='border-collapse: collapse; margin: 0 auto 8px;'>
+                <tr>
+                    <td style='width: 22px; vertical-align: middle; padding-right: 6px;'>
+                        <div style='width: 20px; height: 20px; background: #6366F1; border-radius: 3px; text-align: center;'>
+                            <div style='width: 8px; height: 8px; background: #ffffff; border-radius: 50%; margin: 6px auto 0;'></div>
+                        </div>
+                    </td>
+                    <td style='vertical-align: middle;'>
+                        <span style='font-size: 11px; font-weight: 800; color: #1e1b4b;'>Project Manager</span>
+                        <span style='font-size: 7px; color: #6366F1; letter-spacing: 2px; margin-left: 4px;'>SAAS</span>
+                    </td>
+                </tr>
+            </table>
             <div class='pied-merci'>Merci pour votre confiance !</div>
 
         <div class='pied-texte'>
