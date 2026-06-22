@@ -71,6 +71,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 20)]
     private string $plan = 'free';
 
+    // ID client Stripe — pour accéder au portail de facturation
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $stripeCustomerId = null;
+
     // Compte actif ou non
     #[ORM\Column(type: 'boolean')]
     private bool $isActive = true;
@@ -139,6 +143,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getPlan(): string { return $this->plan; }
     public function setPlan(string $plan): static { $this->plan = $plan; return $this; }
+
+    public function getStripeCustomerId(): ?string { return $this->stripeCustomerId; }
+    public function setStripeCustomerId(?string $id): static { $this->stripeCustomerId = $id; return $this; }
 
     public function getIsActive(): bool { return $this->isActive; }
     public function setIsActive(bool $isActive): static { $this->isActive = $isActive; return $this; }
