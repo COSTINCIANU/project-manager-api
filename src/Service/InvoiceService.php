@@ -122,7 +122,7 @@ class InvoiceService
             <div style='font-size: 15px; font-weight: bold; color: #2c2c2c; margin-bottom: 6px;'>{$userName}</div>
             <div style='font-size: 12px; color: #555; line-height: 1.7;'>
                 {$userEmail}<br>
-                Abonnement {$nomPlan}
+                Plan {$nomPlan}
             </div>
         </td>
     </tr>
