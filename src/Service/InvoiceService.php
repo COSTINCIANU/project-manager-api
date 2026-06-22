@@ -144,7 +144,7 @@ class InvoiceService
                 </tr>
             </table>
 
-                <div style='margin-top: 12px; font-size: 11px; color: #888; line-height: 1.6;'>
+            <div style='margin-top: 12px; font-size: 11px; color: #888; line-height: 1.6;'>
                 COSTINCIANU Gheorghina<br>
                 contact@costincianu.fr<br>
                 project-manager.costincianu.fr
@@ -221,7 +221,7 @@ class InvoiceService
         </div>
     </div>
 
-         Pied de page -->
+         <-- Pied de page -->
             <div class='pied'>
             <table style='border-collapse: collapse; margin: 0 auto 8px;'>
                 <tr>
