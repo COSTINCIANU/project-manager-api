@@ -83,7 +83,7 @@ class InvoiceService
     <!-- EN-TETE -->
     <tr>
         <td width='55%' valign='top'>
-            <img src='https://api.costincianu.fr/images/logos/logo_project_manager_grand.png' style='height: 80px; width: auto;' /><br><br>
+            <img src='https://api.costincianu.fr/images/logos/logo_project_manager_grand.png' style='height: 120px; width: auto;' />
             <span style='font-size: 11px; color: #888; line-height: 1.8;'>
                 COSTINCIANU Gheorghina<br>
                 contact@costincianu.fr<br>
@@ -178,7 +178,7 @@ class InvoiceService
     <!-- PIED DE PAGE -->
     <tr>
         <td colspan='2' style='border-top: 1px solid #eee; padding-top: 20px; text-align: center;'>
-            <img src='https://api.costincianu.fr/images/logos/logo_project_manager_petit.png' style='height: 28px; width: auto; margin-bottom: 8px;' /><br>
+            <img src='https://api.costincianu.fr/images/logos/logo_project_manager_petit.png' style='height: 40px; width: auto;' />
             <div style='font-size: 14px; font-weight: bold; color: #6366F1; margin-bottom: 6px;'>Merci pour votre confiance !</div>
             <div style='font-size: 11px; color: #aaa; line-height: 1.8;'>
                 Facture générée automatiquement par Project Manager<br>
