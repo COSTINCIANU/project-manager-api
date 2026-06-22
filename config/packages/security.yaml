@@ -22,9 +22,9 @@ security:
             stateless: true
             jwt: ~
 
-        # Firewall pour les routes publiques (login, register, forgot, reset, oauth, 2fa)
+        # Firewall pour les routes publiques (login, register, forgot, reset, oauth, 2fa, invoice, download)
         api_public:
-            pattern: ^/api/(auth|push/send|push/vapid-key|public|stripe/webhook)
+            pattern: ^/api/(auth|push/send|push/vapid-key|public|stripe/webhook|stripe/invoice/download)
             stateless: true
             security: false
 

@@ -171,13 +171,13 @@ class StripeController extends AbstractController
 
 
     // =====================
-    // GET — Télécharger une facture PDF personnalisée
+    // POST — Génère un token temporaire pour télécharger la facture
+    // Valide 5 minutes — utilisé par l'app mobile
     // =====================
-    #[Route('/invoice/{plan}', methods: ['GET'])]
-    public function downloadInvoice(
-        string $plan,
-        InvoiceService $invoiceService
-    ): Response {
+    #[Route('/invoice/token', methods: ['POST'])]
+    public function generateDownloadToken(
+        EntityManagerInterface $em
+    ): JsonResponse {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
@@ -185,15 +185,58 @@ class StripeController extends AbstractController
             return $this->json(['error' => 'Non authentifié'], 401);
         }
 
-        // Montant selon le plan
-        $montants = [
-            'pro' => 9.00,
-            'enterprise' => 29.00,
-        ];
+        // Génère un token unique valable 5 minutes
+        $token = bin2hex(random_bytes(32));
+        $user->setDownloadToken($token);
+        $user->setDownloadTokenExpiry(new \DateTime('+5 minutes'));
+        $em->flush();
 
-        if (!isset($montants[$plan])) {
-            return $this->json(['error' => 'Plan invalide'], 400);
+        return $this->json([
+            'token' => $token,
+            'url' => 'https://api.costincianu.fr/api/stripe/invoice/download?token=' . $token . '&plan=' . $user->getPlan(),
+        ]);
+    }
+
+    // =====================
+    // GET — Télécharge la facture via token temporaire
+    // Route publique — pas besoin de JWT
+    // =====================
+    #[Route('/invoice/download', methods: ['GET'])]
+    public function downloadInvoice(
+        Request $request,
+        EntityManagerInterface $em,
+        InvoiceService $invoiceService
+    ): Response {
+        $token = $request->query->get('token');
+        $plan = $request->query->get('plan', 'pro');
+
+        if (empty($token)) {
+            return new Response('Token manquant', 400);
         }
+
+        // On cherche l'utilisateur par son token
+        $user = $em->getRepository(User::class)->findOneBy(['downloadToken' => $token]);
+
+        if (!$user) {
+            return new Response('Token invalide', 401);
+        }
+
+        // On vérifie que le token n'a pas expiré
+        if ($user->getDownloadTokenExpiry() < new \DateTime()) {
+            $user->setDownloadToken(null);
+            $user->setDownloadTokenExpiry(null);
+            $em->flush();
+            return new Response('Token expiré', 401);
+        }
+
+        // On efface le token après utilisation
+        $user->setDownloadToken(null);
+        $user->setDownloadTokenExpiry(null);
+        $em->flush();
+
+        // Montant selon le plan
+        $montants = ['pro' => 9.00, 'enterprise' => 29.00];
+        $montant = $montants[$plan] ?? 9.00;
 
         // Numéro de facture unique
         $numeroFacture = 'PM-' . date('Y') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
@@ -202,18 +245,16 @@ class StripeController extends AbstractController
         $pdf = $invoiceService->genererFacture(
             user: $user,
             plan: $plan,
-            montant: $montants[$plan],
+            montant: $montant,
             numeroFacture: $numeroFacture,
             dateFacture: new \DateTime()
         );
 
-        // Retourne le PDF en téléchargement
         return new Response($pdf, 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="facture-' . $numeroFacture . '.pdf"',
+            'Content-Disposition' => 'inline; filename="facture-' . $numeroFacture . '.pdf"',
         ]);
     }
-
 
 
 

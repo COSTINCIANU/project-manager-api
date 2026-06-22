@@ -88,6 +88,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $refreshTokenExpiry = null;
 
+    // Token temporaire pour télécharger une facture (valide 5 minutes)
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $downloadToken = null;
+
+    // Expiration du token de téléchargement
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $downloadTokenExpiry = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -155,6 +163,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRefreshTokenExpiry(): ?\DateTimeInterface { return $this->refreshTokenExpiry; }
     public function setRefreshTokenExpiry(?\DateTimeInterface $expiry): static { $this->refreshTokenExpiry = $expiry; return $this; }
+
+
+    public function getDownloadToken(): ?string { return $this->downloadToken; }
+    public function setDownloadToken(?string $token): static { $this->downloadToken = $token; return $this; }
+
+    public function getDownloadTokenExpiry(): ?\DateTimeInterface { return $this->downloadTokenExpiry; }
+    public function setDownloadTokenExpiry(?\DateTimeInterface $expiry): static { $this->downloadTokenExpiry = $expiry; return $this; }
 
 
     public function __serialize(): array
