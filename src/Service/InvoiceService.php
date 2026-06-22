@@ -130,19 +130,13 @@ class InvoiceService
     <!-- En-tête -->
     <div class='entete'>
         <div class='logo-zone'>
-            <table style='border-collapse: collapse;'>
-                <tr>
-                    <td style='width: 50px; vertical-align: middle; padding-right: 12px;'>
-                        <div style='width: 44px; height: 44px; background: #6366F1; border-radius: 4px; text-align: center; line-height: 44px;'>
-                            <div style='width: 16px; height: 16px; background: #ffffff; border-radius: 50%; margin: 14px auto 0;'></div>
-                        </div>
-                    </td>
-                    <td style='vertical-align: middle;'>
-                        <div style='font-size: 22px; font-weight: 900; color: #1e1b4b; letter-spacing: -1px;'>Project Manager</div>
-                        <div style='font-size: 8px; color: #6366F1; letter-spacing: 3px; margin-top: 2px;'>PLATEFORME DE GESTION DE PROJETS</div>
-                    </td>
-                </tr>
-            </table>
+    <img src='https://api.costincianu.fr/images/logos/logo_project_manager_grand.png' style='height: 60px; width: auto;' />
+    <div style='margin-top: 8px; font-size: 11px; color: #888; line-height: 1.6;'>
+        COSTINCIANU Gheorghina<br>
+        contact@costincianu.fr<br>
+        project-manager.costincianu.fr
+    </div>
+</div>
 
             <div style='margin-top: 12px; font-size: 11px; color: #888; line-height: 1.6;'>
                 COSTINCIANU Gheorghina<br>
@@ -220,25 +214,13 @@ class InvoiceService
             <span>{$montant} €</span>
         </div>
     </div>
-
          <!-- Pied de page -->
         <div class='pied'>
-            <table style='border-collapse: collapse; margin: 0 auto 8px;'>
-                <tr>
-                    <td style='width: 22px; vertical-align: middle; padding-right: 6px;'>
-                        <div style='width: 20px; height: 20px; background: #6366F1; border-radius: 3px; text-align: center;'>
-                            <div style='width: 8px; height: 8px; background: #ffffff; border-radius: 50%; margin: 6px auto 0;'></div>
-                        </div>
-                    </td>
-                    <td style='vertical-align: middle;'>
-                        <span style='font-size: 11px; font-weight: 800; color: #1e1b4b;'>Project Manager</span>
-                        <span style='font-size: 7px; color: #6366F1; letter-spacing: 2px; margin-left: 4px;'>SAAS</span>
-                    </td>
-                </tr>
-            </table>
-            <div class='pied-merci'>Merci pour votre confiance !</div>
-
-        <div class='pied-texte'>
+       <div style='text-align: center; margin-bottom: 8px;'>
+            <img src='https://api.costincianu.fr/images/logos/logo_project_manager_petit.png' style='height: 25px; width: auto;' />
+        </div>
+        <div class='pied-merci'>Merci pour votre confiance !</div>
+            <div class='pied-texte'>
             Facture générée automatiquement par Project Manager<br>
             Pour toute question : contact@costincianu.fr<br>
             project-manager.costincianu.fr
