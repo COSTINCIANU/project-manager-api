@@ -9,6 +9,8 @@ namespace App\Controller;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Service\InvoiceService;
+use Symfony\Component\HttpFoundation\Response;
 
 
 use Stripe\Checkout\Session;
@@ -165,4 +167,54 @@ class StripeController extends AbstractController
             'publicKey' => $_ENV['STRIPE_PUBLIC_KEY'] ?? '',
         ]);
     }
+
+
+
+    // =====================
+    // GET — Télécharger une facture PDF personnalisée
+    // =====================
+    #[Route('/invoice/{plan}', methods: ['GET'])]
+    public function downloadInvoice(
+        string $plan,
+        InvoiceService $invoiceService
+    ): Response {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->json(['error' => 'Non authentifié'], 401);
+        }
+
+        // Montant selon le plan
+        $montants = [
+            'pro' => 9.00,
+            'enterprise' => 29.00,
+        ];
+
+        if (!isset($montants[$plan])) {
+            return $this->json(['error' => 'Plan invalide'], 400);
+        }
+
+        // Numéro de facture unique
+        $numeroFacture = 'PM-' . date('Y') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+
+        // Génère le PDF
+        $pdf = $invoiceService->genererFacture(
+            user: $user,
+            plan: $plan,
+            montant: $montants[$plan],
+            numeroFacture: $numeroFacture,
+            dateFacture: new \DateTime()
+        );
+
+        // Retourne le PDF en téléchargement
+        return new Response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="facture-' . $numeroFacture . '.pdf"',
+        ]);
+    }
+
+
+
+
 }
