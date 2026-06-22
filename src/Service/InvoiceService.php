@@ -221,8 +221,8 @@ class InvoiceService
         </div>
     </div>
 
-         <-- Pied de page -->
-            <div class='pied'>
+         <!-- Pied de page -->
+        <div class='pied'>
             <table style='border-collapse: collapse; margin: 0 auto 8px;'>
                 <tr>
                     <td style='width: 22px; vertical-align: middle; padding-right: 6px;'>
