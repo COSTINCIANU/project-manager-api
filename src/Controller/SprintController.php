@@ -15,6 +15,7 @@ use App\Entity\Sprint;
 use App\Entity\Task;
 use App\Service\PermissionService;
 use Doctrine\ORM\EntityManagerInterface;
+use Stripe\Stripe;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -252,5 +253,68 @@ class SprintController extends AbstractController
             'progression' => $progression,
             'tasks' => $tachesData,
         ];
+    }
+
+    // =====================
+    // POST — Créer une session portail client Stripe
+    // Permet à l'utilisateur de gérer son abonnement
+    // voir ses factures, changer de plan, annuler
+    // =====================
+    #[Route('/portal', methods: ['POST'])]
+    public function portal(EntityManagerInterface $em): JsonResponse
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->json(['error' => 'Non authentifié'], 401);
+        }
+
+        Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
+
+        try {
+            // Si l'utilisateur n'a pas encore de customer Stripe on en crée un
+            $customerId = $user->getStripeCustomerId();
+
+            if (!$customerId) {
+                $customer = \Stripe\Customer::create([
+                    'email' => $user->getEmail(),
+                    'metadata' => ['user_email' => $user->getEmail()],
+                ]);
+                $customerId = $customer->id;
+                $user->setStripeCustomerId($customerId);
+                $em->flush();
+            }
+
+            // Création de la session portail client
+            $session = \Stripe\BillingPortal\Session::create([
+                'customer' => $customerId,
+                'return_url' => 'https://project-manager.costincianu.fr/profile',
+            ]);
+
+            return $this->json(['url' => $session->url]);
+
+        } catch (\Exception $e) {
+            return $this->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    // =====================
+    // GET — Récupérer le plan actuel de l'utilisateur
+    // =====================
+    #[Route('/plan', methods: ['GET'])]
+    public function getCurrentPlan(): JsonResponse
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->json(['error' => 'Non authentifié'], 401);
+        }
+
+        return $this->json([
+            'plan' => $user->getPlan(),
+            'email' => $user->getEmail(),
+        ]);
     }
 }
