@@ -64,6 +64,15 @@ class Task
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $externalLink = null;
 
+    // Récurrence de la tâche — null = pas de récurrence
+    #[ORM\Column(type: 'string', length: 20, nullable: true)]
+    private ?string $recurrence = null;
+
+    // Date de fin de récurrence
+    #[ORM\Column(type: 'string', length: 20, nullable: true)]
+    private ?string $recurrenceEndDate = null;
+
+
     #[ORM\OneToMany(mappedBy: 'task', targetEntity: SubTask::class, cascade: ['persist', 'remove'])]
     private Collection $subTasks;
 
@@ -262,6 +271,28 @@ class Task
     {
         $this->externalLink = $externalLink;
 
+        return $this;
+    }
+
+    public function getRecurrence(): ?string
+    {
+        return $this->recurrence;
+    }
+
+    public function setRecurrence(?string $recurrence): static
+    {
+        $this->recurrence = $recurrence;
+        return $this;
+    }
+
+    public function getRecurrenceEndDate(): ?string
+    {
+        return $this->recurrenceEndDate;
+    }
+
+    public function setRecurrenceEndDate(?string $recurrenceEndDate): static
+    {
+        $this->recurrenceEndDate = $recurrenceEndDate;
         return $this;
     }
 

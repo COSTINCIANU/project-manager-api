@@ -55,6 +55,8 @@ class TaskController extends AbstractController
             'assignedTo' => $task->getAssignedTo(),
             'dependsOn' => $task->getDependsOn(),
             'externalLink' => $task->getExternalLink(),
+            'recurrence' => $task->getRecurrence(),
+            'recurrenceEndDate' => $task->getRecurrenceEndDate(),
             'subTasks' => $subTasks,
         ];
     }
@@ -129,6 +131,9 @@ class TaskController extends AbstractController
         // Lien externe Google Drive / Dropbox
         $task->setExternalLink($data['externalLink'] ?? null);
         $task->setTicketType($data['ticketType'] ?? 'task');
+        // Récurrence — daily, weekly, monthly ou null
+        $task->setRecurrence($data['recurrence'] ?? null);
+        $task->setRecurrenceEndDate($data['recurrenceEndDate'] ?? null);
 
         // Sous-tâches
         if (!empty($data['subTasks'])) {
@@ -195,6 +200,14 @@ class TaskController extends AbstractController
         // Lien externe Google Drive / Dropbox
         $task->setExternalLink($data['externalLink'] ?? $task->getExternalLink());
         $task->setTicketType($data['ticketType'] ?? $task->getTicketType());
+        // Récurrence
+        if (array_key_exists('recurrence', $data)) {
+            $task->setRecurrence($data['recurrence']);
+        }
+        if (array_key_exists('recurrenceEndDate', $data)) {
+            $task->setRecurrenceEndDate($data['recurrenceEndDate']);
+        }
+
 
         $em->flush();
 
