@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // RegleAutomatisation.php — Entité Règle d'automatisation
 // Stocke une règle "Quand X → faire Y" liée à un projet
@@ -89,6 +90,7 @@ class RegleAutomatisation
     public function setProjet(?Project $projet): static
     {
         $this->projet = $projet;
+
         return $this;
     }
 
@@ -100,6 +102,7 @@ class RegleAutomatisation
     public function setDeclencheur(string $declencheur): static
     {
         $this->declencheur = $declencheur;
+
         return $this;
     }
 
@@ -111,6 +114,7 @@ class RegleAutomatisation
     public function setValeurDeclencheur(?string $valeurDeclencheur): static
     {
         $this->valeurDeclencheur = $valeurDeclencheur;
+
         return $this;
     }
 
@@ -122,6 +126,7 @@ class RegleAutomatisation
     public function setAction(string $action): static
     {
         $this->action = $action;
+
         return $this;
     }
 
@@ -133,6 +138,7 @@ class RegleAutomatisation
     public function setValeurAction(?string $valeurAction): static
     {
         $this->valeurAction = $valeurAction;
+
         return $this;
     }
 
@@ -144,6 +150,7 @@ class RegleAutomatisation
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
+
         return $this;
     }
 
@@ -155,6 +162,7 @@ class RegleAutomatisation
     public function setActive(bool $active): static
     {
         $this->active = $active;
+
         return $this;
     }
 
@@ -167,15 +175,15 @@ class RegleAutomatisation
     public function versTableau(): array
     {
         return [
-            'id'                => $this->id,
-            'nom'               => $this->nom,
-            'declencheur'       => $this->declencheur,
+            'id' => $this->id,
+            'nom' => $this->nom,
+            'declencheur' => $this->declencheur,
             'valeurDeclencheur' => $this->valeurDeclencheur,
-            'action'            => $this->action,
-            'valeurAction'      => $this->valeurAction,
-            'active'            => $this->active,
-            'projetId'          => $this->projet?->getId(),
-            'creeLe'            => $this->creeLe->format('Y-m-d H:i:s'),
+            'action' => $this->action,
+            'valeurAction' => $this->valeurAction,
+            'active' => $this->active,
+            'projetId' => $this->projet?->getId(),
+            'creeLe' => $this->creeLe->format('Y-m-d H:i:s'),
         ];
     }
 }

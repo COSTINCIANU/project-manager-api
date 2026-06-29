@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // ApiKeyController.php — Gestion des clés API
 // Permet aux utilisateurs de créer, lister
@@ -35,12 +36,12 @@ class ApiKeyController extends AbstractController
             ['createdAt' => 'DESC']
         );
 
-        $data = array_map(function($key) {
+        $data = array_map(function ($key) {
             return [
                 'id' => $key->getId(),
                 'name' => $key->getName(),
                 // On masque la clé — affiche seulement les 8 premiers caractères
-                'apiKey' => substr($key->getApiKey(), 0, 8) . '...',
+                'apiKey' => substr($key->getApiKey(), 0, 8).'...',
                 'fullKey' => $key->getApiKey(),
                 'isActive' => $key->isActive(),
                 'createdAt' => $key->getCreatedAt()->format('Y-m-d H:i:s'),

@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // MentionController.php — Gestion des mentions
 // Détecte les @email dans les commentaires
@@ -27,7 +28,7 @@ class MentionController extends AbstractController
     #[Route('', methods: ['GET'])]
     public function index(EntityManagerInterface $em): JsonResponse
     {
-        /** @var \App\Entity\User $user */
+        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user) {
@@ -40,7 +41,7 @@ class MentionController extends AbstractController
             ['createdAt' => 'DESC']
         );
 
-        $data = array_map(function($mention) {
+        $data = array_map(function ($mention) {
             return [
                 'id' => $mention->getId(),
                 'mentionedByEmail' => $mention->getMentionedByEmail(),
@@ -65,7 +66,7 @@ class MentionController extends AbstractController
         EntityManagerInterface $em,
         MailerInterface $mailer
     ): JsonResponse {
-        /** @var \App\Entity\User $user */
+        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user) {
@@ -89,13 +90,15 @@ class MentionController extends AbstractController
             // On cherche un utilisateur dont l'email commence par cette partie
             $users = $em->getRepository(User::class)->createQueryBuilder('u')
                 ->where('u.email LIKE :part')
-                ->setParameter('part', $part . '@%')
+                ->setParameter('part', $part.'@%')
                 ->getQuery()
                 ->getResult();
 
             foreach ($users as $mentionedUser) {
                 // On ne se mentionne pas soi-même
-                if ($mentionedUser->getEmail() === $user->getEmail()) continue;
+                if ($mentionedUser->getEmail() === $user->getEmail()) {
+                    continue;
+                }
 
                 // On crée la mention
                 $mention = new Mention();
@@ -130,7 +133,7 @@ class MentionController extends AbstractController
         $em->flush();
 
         return $this->json([
-            'message' => count($created) . ' mention(s) créée(s)',
+            'message' => count($created).' mention(s) créée(s)',
             'mentioned' => $created,
         ]);
     }
@@ -160,7 +163,7 @@ class MentionController extends AbstractController
     #[Route('/read-all', methods: ['PUT'])]
     public function markAllAsRead(EntityManagerInterface $em): JsonResponse
     {
-        /** @var \App\Entity\User $user */
+        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user) {
@@ -178,6 +181,6 @@ class MentionController extends AbstractController
 
         $em->flush();
 
-        return $this->json(['message' => count($mentions) . ' mention(s) marquée(s) comme lues']);
+        return $this->json(['message' => count($mentions).' mention(s) marquée(s) comme lues']);
     }
 }

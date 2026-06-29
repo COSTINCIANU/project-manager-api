@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // ProjectTemplateControllerTest.php — Tests PHPUnit
 // Teste les routes Templates :
@@ -8,10 +9,10 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\User;
 use App\Entity\ProjectTemplate;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ProjectTemplateControllerTest extends WebTestCase
 {
@@ -22,7 +23,7 @@ class ProjectTemplateControllerTest extends WebTestCase
 
     protected function setUp(): void
     {
-        $this->client        = static::createClient();
+        $this->client = static::createClient();
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $this->nettoyerDonneesTest();
         $this->creerDonneesTest();
@@ -39,11 +40,15 @@ class ProjectTemplateControllerTest extends WebTestCase
     {
         $templates = $this->entityManager->getRepository(ProjectTemplate::class)
             ->findBy(['name' => 'Template PHPUnit Test']);
-        foreach ($templates as $t) $this->entityManager->remove($t);
+        foreach ($templates as $t) {
+            $this->entityManager->remove($t);
+        }
 
         $user = $this->entityManager->getRepository(User::class)
             ->findOneBy(['email' => 'test.template@example.com']);
-        if ($user) $this->entityManager->remove($user);
+        if ($user) {
+            $this->entityManager->remove($user);
+        }
 
         $this->entityManager->flush();
     }
@@ -80,7 +85,7 @@ class ProjectTemplateControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode(['email' => 'test.template@example.com', 'password' => 'MotDePasseTest123!'])
         );
-        $reponse     = json_decode($this->client->getResponse()->getContent(), true);
+        $reponse = json_decode($this->client->getResponse()->getContent(), true);
         $this->token = $reponse['token'];
     }
 
@@ -112,7 +117,7 @@ class ProjectTemplateControllerTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
         $données = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('id',   $données);
+        $this->assertArrayHasKey('id', $données);
         $this->assertArrayHasKey('name', $données);
         $this->assertEquals('Template PHPUnit Test', $données['name']);
     }
@@ -128,16 +133,16 @@ class ProjectTemplateControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer {$this->token}"],
             // Dans testCreerTemplate() — remplace le json_encode
             json_encode([
-                'name'        => 'Template PHPUnit Test',
+                'name' => 'Template PHPUnit Test',
                 'description' => 'Créé par PHPUnit',
-                'color'       => '#378ADD',
-                'icon'        => '📋',
+                'color' => '#378ADD',
+                'icon' => '📋',
             ])
         );
 
         $this->assertResponseIsSuccessful();
         $données = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('id',   $données);
+        $this->assertArrayHasKey('id', $données);
         $this->assertEquals('Template PHPUnit Test', $données['name']);
 
         // Nettoyage
@@ -162,7 +167,7 @@ class ProjectTemplateControllerTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
         $données = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('projectId',   $données);
+        $this->assertArrayHasKey('projectId', $données);
         $this->assertArrayHasKey('projectName', $données);
     }
 

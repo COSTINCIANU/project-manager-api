@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity;
 
 use App\Repository\TaskCommentRepository;
@@ -30,17 +31,56 @@ class TaskComment
         $this->createdAt = new \DateTime();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getContent(): ?string { return $this->content; }
-    public function setContent(string $content): static { $this->content = $content; return $this; }
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
 
-    public function getUserId(): ?int { return $this->userId; }
-    public function setUserId(?int $userId): static { $this->userId = $userId; return $this; }
+    public function setContent(string $content): static
+    {
+        $this->content = $content;
 
-    public function getCreatedAt(): ?\DateTimeInterface { return $this->createdAt; }
-    public function setCreatedAt(\DateTimeInterface $createdAt): static { $this->createdAt = $createdAt; return $this; }
+        return $this;
+    }
 
-    public function getTask(): ?Task { return $this->task; }
-    public function setTask(?Task $task): static { $this->task = $task; return $this; }
+    public function getUserId(): ?int
+    {
+        return $this->userId;
+    }
+
+    public function setUserId(?int $userId): static
+    {
+        $this->userId = $userId;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getTask(): ?Task
+    {
+        return $this->task;
+    }
+
+    public function setTask(?Task $task): static
+    {
+        $this->task = $task;
+
+        return $this;
+    }
 }

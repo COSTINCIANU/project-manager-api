@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // AIController.php — Assistant IA
 // Fait l'appel à l'API Claude d'Anthropic
@@ -69,11 +70,11 @@ class AIController extends AbstractController
             ]);
 
             $result = $response->toArray();
+
             return $this->json([
                 'content' => $result['content'][0]['text'],
                 'simulated' => false,
             ]);
-
         } catch (\Exception $e) {
             // En cas d'erreur on retourne une réponse simulée
             return $this->simulatedResponse($data['messages']);
@@ -116,8 +117,8 @@ class AIController extends AbstractController
                     'messages' => [
                         [
                             'role' => 'user',
-                            'content' => "Génère 5-8 tâches pour ce projet : $description"
-                        ]
+                            'content' => "Génère 5-8 tâches pour ce projet : $description",
+                        ],
                     ],
                 ],
             ]);
@@ -132,7 +133,6 @@ class AIController extends AbstractController
                 'tasks' => $tasksData['tasks'] ?? [],
                 'simulated' => false,
             ]);
-
         } catch (\Exception $e) {
             return $this->simulatedTasks($description);
         }
@@ -195,6 +195,7 @@ class AIController extends AbstractController
             'simulated' => true,
         ]);
     }
+
     // =====================
     // Réponses simulées intelligentes
     // Basées sur le message de l'utilisateur

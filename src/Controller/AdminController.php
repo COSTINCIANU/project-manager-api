@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // AdminController.php — Dashboard Admin
 // Gère les utilisateurs et abonnements
@@ -22,7 +23,7 @@ class AdminController extends AbstractController
     // =====================
     private function checkAdmin(): ?JsonResponse
     {
-        /** @var \App\Entity\User $user */
+        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user || !in_array('ROLE_ADMIN', $user->getRoles())) {
@@ -39,12 +40,14 @@ class AdminController extends AbstractController
     public function stats(EntityManagerInterface $em): JsonResponse
     {
         $error = $this->checkAdmin();
-        if ($error) return $error;
+        if ($error) {
+            return $error;
+        }
 
         $users = $em->getRepository(User::class)->findAll();
 
         $totalUsers = count($users);
-        $activeUsers = count(array_filter($users, fn($u) => $u->getIsActive()));
+        $activeUsers = count(array_filter($users, fn ($u) => $u->getIsActive()));
         $planCounts = [
             'free' => 0,
             'pro' => 0,
@@ -54,7 +57,7 @@ class AdminController extends AbstractController
         foreach ($users as $user) {
             $plan = $user->getPlan();
             if (isset($planCounts[$plan])) {
-                $planCounts[$plan]++;
+                ++$planCounts[$plan];
             }
         }
 
@@ -76,11 +79,13 @@ class AdminController extends AbstractController
     public function users(EntityManagerInterface $em): JsonResponse
     {
         $error = $this->checkAdmin();
-        if ($error) return $error;
+        if ($error) {
+            return $error;
+        }
 
         $users = $em->getRepository(User::class)->findAll();
 
-        $data = array_map(function($user) {
+        $data = array_map(function ($user) {
             return [
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
@@ -100,7 +105,9 @@ class AdminController extends AbstractController
     public function updatePlan(int $id, Request $request, EntityManagerInterface $em): JsonResponse
     {
         $error = $this->checkAdmin();
-        if ($error) return $error;
+        if ($error) {
+            return $error;
+        }
 
         $user = $em->getRepository(User::class)->find($id);
 
@@ -131,7 +138,9 @@ class AdminController extends AbstractController
     public function toggleUser(int $id, EntityManagerInterface $em): JsonResponse
     {
         $error = $this->checkAdmin();
-        if ($error) return $error;
+        if ($error) {
+            return $error;
+        }
 
         $user = $em->getRepository(User::class)->find($id);
 
@@ -140,7 +149,7 @@ class AdminController extends AbstractController
         }
 
         // On ne peut pas désactiver son propre compte
-        /** @var \App\Entity\User $currentUser */
+        /** @var User $currentUser */
         $currentUser = $this->getUser();
         if ($user->getId() === $currentUser->getId()) {
             return $this->json(['error' => 'Impossible de désactiver votre propre compte'], 400);
@@ -162,7 +171,9 @@ class AdminController extends AbstractController
     public function deleteUser(int $id, EntityManagerInterface $em): JsonResponse
     {
         $error = $this->checkAdmin();
-        if ($error) return $error;
+        if ($error) {
+            return $error;
+        }
 
         $user = $em->getRepository(User::class)->find($id);
 
@@ -170,7 +181,7 @@ class AdminController extends AbstractController
             return $this->json(['error' => 'Utilisateur non trouvé'], 404);
         }
 
-        /** @var \App\Entity\User $currentUser */
+        /** @var User $currentUser */
         $currentUser = $this->getUser();
         if ($user->getId() === $currentUser->getId()) {
             return $this->json(['error' => 'Impossible de supprimer votre propre compte'], 400);

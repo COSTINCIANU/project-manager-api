@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // PushSubscriptionRepository.php — Repository PushSubscription
 // =====================================================

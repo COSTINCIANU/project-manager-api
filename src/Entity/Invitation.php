@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // Invitation.php — Entité pour les invitations
 // Stocke les invitations envoyées aux utilisateurs
@@ -45,19 +46,61 @@ class Invitation
         $this->token = bin2hex(random_bytes(32));
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getEmail(): ?string { return $this->email; }
-    public function setEmail(string $email): static { $this->email = $email; return $this; }
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
 
-    public function getProjectId(): ?int { return $this->projectId; }
-    public function setProjectId(int $projectId): static { $this->projectId = $projectId; return $this; }
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
 
-    public function getToken(): ?string { return $this->token; }
-    public function setToken(string $token): static { $this->token = $token; return $this; }
+        return $this;
+    }
 
-    public function getStatus(): ?string { return $this->status; }
-    public function setStatus(string $status): static { $this->status = $status; return $this; }
+    public function getProjectId(): ?int
+    {
+        return $this->projectId;
+    }
 
-    public function getCreatedAt(): ?\DateTimeInterface { return $this->createdAt; }
+    public function setProjectId(int $projectId): static
+    {
+        $this->projectId = $projectId;
+
+        return $this;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    public function setToken(string $token): static
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
 }

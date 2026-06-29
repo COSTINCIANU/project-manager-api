@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // PermissionService.php — Service de permissions
 // Vérifie les droits selon le rôle métier de l'utilisateur
@@ -12,7 +13,9 @@ use Symfony\Bundle\SecurityBundle\Security;
 
 class PermissionService
 {
-    public function __construct(private Security $security) {}
+    public function __construct(private Security $security)
+    {
+    }
 
     // Récupère l'utilisateur connecté
     public function getUser(): ?User
@@ -24,13 +27,14 @@ class PermissionService
     public function getRole(): string
     {
         $user = $this->getUser();
+
         return $user ? ($user->getRole() ?? 'client') : 'client';
     }
 
     // Admin uniquement
     public function isAdmin(): bool
     {
-        return $this->getRole() === 'admin';
+        return 'admin' === $this->getRole();
     }
 
     // Manager ou admin

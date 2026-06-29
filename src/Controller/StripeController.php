@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // StripeController.php — Paiement Stripe
 // Gère les abonnements aux plans tarifaires
@@ -8,16 +9,14 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Service\InvoiceService;
-use Symfony\Component\HttpFoundation\Response;
-
-
+use Doctrine\ORM\EntityManagerInterface;
 use Stripe\Checkout\Session;
 use Stripe\Stripe;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/stripe')]
@@ -29,7 +28,7 @@ class StripeController extends AbstractController
     #[Route('/checkout', methods: ['POST'])]
     public function checkout(Request $request): JsonResponse
     {
-        /** @var \App\Entity\User $user */
+        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user) {
@@ -81,7 +80,7 @@ class StripeController extends AbstractController
                     'quantity' => 1,
                 ]],
                 'mode' => 'subscription',
-                'success_url' => 'https://project-manager.costincianu.fr?payment=success&plan=' . $plan,
+                'success_url' => 'https://project-manager.costincianu.fr?payment=success&plan='.$plan,
                 'cancel_url' => 'https://project-manager.costincianu.fr?payment=cancelled',
                 'customer_email' => $user->getEmail(),
                 'metadata' => [
@@ -98,7 +97,6 @@ class StripeController extends AbstractController
             return $this->json(['error' => $e->getMessage()], 500);
         }
     }
-
 
     // =====================
     // POST — Webhook Stripe
@@ -141,12 +139,14 @@ class StripeController extends AbstractController
                             $em->flush();
                         }
                     }
+
                     break;
 
                 case 'customer.subscription.deleted':
                     // Abonnement annulé — repasser en gratuit
                     $subscription = $event->data->object;
                     $customerId = $subscription->customer;
+
                     // On cherche l'utilisateur par customer_id si stocké
                     break;
             }
@@ -168,8 +168,6 @@ class StripeController extends AbstractController
         ]);
     }
 
-
-
     // =====================
     // POST — Génère un token temporaire pour télécharger la facture
     // Valide 5 minutes — utilisé par l'app mobile
@@ -178,7 +176,7 @@ class StripeController extends AbstractController
     public function generateDownloadToken(
         EntityManagerInterface $em
     ): JsonResponse {
-        /** @var \App\Entity\User $user */
+        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user) {
@@ -193,7 +191,7 @@ class StripeController extends AbstractController
 
         return $this->json([
             'token' => $token,
-            'url' => 'https://api.costincianu.fr/api/stripe/invoice/download?token=' . $token . '&plan=' . $user->getPlan(),
+            'url' => 'https://api.costincianu.fr/api/stripe/invoice/download?token='.$token.'&plan='.$user->getPlan(),
         ]);
     }
 
@@ -226,6 +224,7 @@ class StripeController extends AbstractController
             $user->setDownloadToken(null);
             $user->setDownloadTokenExpiry(null);
             $em->flush();
+
             return new Response('Token expiré', 401);
         }
 
@@ -239,7 +238,7 @@ class StripeController extends AbstractController
         $montant = $montants[$plan] ?? 9.00;
 
         // Numéro de facture unique
-        $numeroFacture = 'PM-' . date('Y') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+        $numeroFacture = 'PM-'.date('Y').'-'.str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
 
         // Génère le PDF
         $pdf = $invoiceService->genererFacture(
@@ -252,10 +251,7 @@ class StripeController extends AbstractController
 
         return new Response($pdf, 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="facture-' . $numeroFacture . '.pdf"',
+            'Content-Disposition' => 'inline; filename="facture-'.$numeroFacture.'.pdf"',
         ]);
     }
-
-
-
 }

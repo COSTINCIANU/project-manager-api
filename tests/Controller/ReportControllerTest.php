@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // ReportControllerTest.php — Tests PHPUnit
 // Teste les routes de rapports avancés :
@@ -7,12 +8,12 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\User;
 use App\Entity\Project;
-use App\Entity\Task;
 use App\Entity\Sprint;
+use App\Entity\Task;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ReportControllerTest extends WebTestCase
 {
@@ -36,7 +37,7 @@ class ReportControllerTest extends WebTestCase
     // =====================
     protected function setUp(): void
     {
-        $this->client        = static::createClient();
+        $this->client = static::createClient();
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
 
         $this->nettoyerDonneesTest();
@@ -172,12 +173,12 @@ class ReportControllerTest extends WebTestCase
             [], [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-                'email'    => 'test.reports@example.com',
+                'email' => 'test.reports@example.com',
                 'password' => 'MotDePasseTest123!',
             ])
         );
 
-        $reponse     = json_decode($this->client->getResponse()->getContent(), true);
+        $reponse = json_decode($this->client->getResponse()->getContent(), true);
         $this->token = $reponse['token'];
     }
 
@@ -198,23 +199,23 @@ class ReportControllerTest extends WebTestCase
         $données = json_decode($this->client->getResponse()->getContent(), true);
 
         // Vérifie la structure de la réponse
-        $this->assertArrayHasKey('projetId',        $données);
-        $this->assertArrayHasKey('projetNom',       $données);
-        $this->assertArrayHasKey('sprints',         $données);
+        $this->assertArrayHasKey('projetId', $données);
+        $this->assertArrayHasKey('projetNom', $données);
+        $this->assertArrayHasKey('sprints', $données);
         $this->assertArrayHasKey('velociteMoyenne', $données);
-        $this->assertArrayHasKey('totalSprints',    $données);
+        $this->assertArrayHasKey('totalSprints', $données);
 
         // Vérifie que notre sprint de test est présent
         $this->assertGreaterThanOrEqual(1, count($données['sprints']));
 
         // Vérifie la structure d'un sprint
         $premierSprint = $données['sprints'][0];
-        $this->assertArrayHasKey('sprintId',        $premierSprint);
-        $this->assertArrayHasKey('sprintNom',       $premierSprint);
-        $this->assertArrayHasKey('totalTaches',     $premierSprint);
+        $this->assertArrayHasKey('sprintId', $premierSprint);
+        $this->assertArrayHasKey('sprintNom', $premierSprint);
+        $this->assertArrayHasKey('totalTaches', $premierSprint);
         $this->assertArrayHasKey('tachesTerminees', $premierSprint);
-        $this->assertArrayHasKey('velocite',        $premierSprint);
-        $this->assertArrayHasKey('tauxCompletion',  $premierSprint);
+        $this->assertArrayHasKey('velocite', $premierSprint);
+        $this->assertArrayHasKey('tauxCompletion', $premierSprint);
     }
 
     // =====================
@@ -234,11 +235,11 @@ class ReportControllerTest extends WebTestCase
         $données = json_decode($this->client->getResponse()->getContent(), true);
 
         // Vérifie la structure
-        $this->assertArrayHasKey('projetId',    $données);
-        $this->assertArrayHasKey('projetNom',   $données);
+        $this->assertArrayHasKey('projetId', $données);
+        $this->assertArrayHasKey('projetNom', $données);
         $this->assertArrayHasKey('totalHeures', $données);
-        $this->assertArrayHasKey('parMembre',   $données);
-        $this->assertArrayHasKey('parTache',    $données);
+        $this->assertArrayHasKey('parMembre', $données);
+        $this->assertArrayHasKey('parTache', $données);
 
         // Vérifie que le total des heures est correct (2+1+3 = 6h)
         $this->assertEquals(6, $données['totalHeures'],
@@ -272,9 +273,9 @@ class ReportControllerTest extends WebTestCase
         $données = json_decode($this->client->getResponse()->getContent(), true);
 
         // Vérifie la structure
-        $this->assertArrayHasKey('projetId',     $données);
-        $this->assertArrayHasKey('projetNom',    $données);
-        $this->assertArrayHasKey('sprints',      $données);
+        $this->assertArrayHasKey('projetId', $données);
+        $this->assertArrayHasKey('projetNom', $données);
+        $this->assertArrayHasKey('sprints', $données);
         $this->assertArrayHasKey('totalSprints', $données);
 
         // Vérifie qu'on a au moins notre sprint de test
@@ -282,14 +283,14 @@ class ReportControllerTest extends WebTestCase
 
         // Vérifie la structure d'un sprint dans le comparatif
         $sprint = $données['sprints'][0];
-        $this->assertArrayHasKey('sprintId',        $sprint);
-        $this->assertArrayHasKey('totalTaches',     $sprint);
+        $this->assertArrayHasKey('sprintId', $sprint);
+        $this->assertArrayHasKey('totalTaches', $sprint);
         $this->assertArrayHasKey('tachesTerminees', $sprint);
-        $this->assertArrayHasKey('tachesEnCours',   $sprint);
-        $this->assertArrayHasKey('tachesAFaire',    $sprint);
-        $this->assertArrayHasKey('tauxCompletion',  $sprint);
-        $this->assertArrayHasKey('parType',         $sprint);
-        $this->assertArrayHasKey('tempsEstime',     $sprint);
+        $this->assertArrayHasKey('tachesEnCours', $sprint);
+        $this->assertArrayHasKey('tachesAFaire', $sprint);
+        $this->assertArrayHasKey('tauxCompletion', $sprint);
+        $this->assertArrayHasKey('parType', $sprint);
+        $this->assertArrayHasKey('tempsEstime', $sprint);
 
         // Vérifie que la somme des tâches est correcte
         $totalCalcule = $sprint['tachesTerminees'] + $sprint['tachesEnCours'] + $sprint['tachesAFaire'];
@@ -321,8 +322,8 @@ class ReportControllerTest extends WebTestCase
             'Le CSV doit contenir la ligne d\'en-tête');
 
         // Vérifie que les 3 tâches de test sont dans le CSV
-        $this->assertStringContainsString('Tâche rapport haute 2h',    $contenu);
-        $this->assertStringContainsString('Tâche rapport normale 1h',  $contenu);
+        $this->assertStringContainsString('Tâche rapport haute 2h', $contenu);
+        $this->assertStringContainsString('Tâche rapport normale 1h', $contenu);
         $this->assertStringContainsString('Tâche rapport terminée 3h', $contenu);
 
         // Vérifie que le CSV a au moins 4 lignes (1 entête + 3 tâches)
@@ -364,8 +365,8 @@ class ReportControllerTest extends WebTestCase
 
         // Vérifie la structure
         $this->assertArrayHasKey('totalTaches', $données);
-        $this->assertArrayHasKey('parStatut',   $données);
-        $this->assertArrayHasKey('parType',     $données);
+        $this->assertArrayHasKey('parStatut', $données);
+        $this->assertArrayHasKey('parType', $données);
         $this->assertArrayHasKey('parPriorite', $données);
 
         // Vérifie le total — 3 tâches créées

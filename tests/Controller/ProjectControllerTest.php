@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // ProjectControllerTest.php — Tests des projets
 // Teste les routes : lister, créer, supprimer
@@ -7,10 +8,10 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\User;
 use App\Entity\Project;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ProjectControllerTest extends WebTestCase
 {
@@ -95,6 +96,7 @@ class ProjectControllerTest extends WebTestCase
         );
 
         $reponse = json_decode($this->client->getResponse()->getContent(), true);
+
         return $reponse['token'];
     }
 
@@ -113,7 +115,7 @@ class ProjectControllerTest extends WebTestCase
             [], [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+                'HTTP_AUTHORIZATION' => 'Bearer '.$token,
             ]
         );
 
@@ -150,7 +152,7 @@ class ProjectControllerTest extends WebTestCase
             [], [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+                'HTTP_AUTHORIZATION' => 'Bearer '.$token,
             ],
             json_encode([
                 'name' => 'Projet de test PHPUnit',
@@ -177,7 +179,7 @@ class ProjectControllerTest extends WebTestCase
             [], [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+                'HTTP_AUTHORIZATION' => 'Bearer '.$token,
             ],
             json_encode([
                 'name' => 'Projet de test PHPUnit',
@@ -207,7 +209,7 @@ class ProjectControllerTest extends WebTestCase
             [], [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+                'HTTP_AUTHORIZATION' => 'Bearer '.$token,
             ],
             json_encode([
                 'name' => 'Projet de test PHPUnit',
@@ -223,11 +225,11 @@ class ProjectControllerTest extends WebTestCase
         // On supprime le projet
         $this->client->request(
             'DELETE',
-            '/api/projects/' . $idProjet,
+            '/api/projects/'.$idProjet,
             [], [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+                'HTTP_AUTHORIZATION' => 'Bearer '.$token,
             ]
         );
 
@@ -248,7 +250,7 @@ class ProjectControllerTest extends WebTestCase
             [], [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTHORIZATION' => 'Bearer ' . $tokenAdmin,
+                'HTTP_AUTHORIZATION' => 'Bearer '.$tokenAdmin,
             ],
             json_encode([
                 'name' => 'Projet de test PHPUnit',
@@ -266,11 +268,11 @@ class ProjectControllerTest extends WebTestCase
 
         $this->client->request(
             'DELETE',
-            '/api/projects/' . $idProjet,
+            '/api/projects/'.$idProjet,
             [], [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTHORIZATION' => 'Bearer ' . $tokenDev,
+                'HTTP_AUTHORIZATION' => 'Bearer '.$tokenDev,
             ]
         );
 
@@ -288,7 +290,7 @@ class ProjectControllerTest extends WebTestCase
             [], [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+                'HTTP_AUTHORIZATION' => 'Bearer '.$token,
             ]
         );
 

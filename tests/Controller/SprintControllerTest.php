@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // SprintControllerTest.php — Tests PHPUnit
 // Teste les routes Sprint :
@@ -8,12 +9,12 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\User;
 use App\Entity\Project;
 use App\Entity\Sprint;
 use App\Entity\Task;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class SprintControllerTest extends WebTestCase
 {
@@ -26,7 +27,7 @@ class SprintControllerTest extends WebTestCase
 
     protected function setUp(): void
     {
-        $this->client        = static::createClient();
+        $this->client = static::createClient();
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $this->nettoyerDonneesTest();
         $this->creerDonneesTest();
@@ -43,19 +44,27 @@ class SprintControllerTest extends WebTestCase
     {
         $taches = $this->entityManager->getRepository(Task::class)
             ->findBy(['name' => 'Tâche Sprint PHPUnit']);
-        foreach ($taches as $t) $this->entityManager->remove($t);
+        foreach ($taches as $t) {
+            $this->entityManager->remove($t);
+        }
 
         $sprints = $this->entityManager->getRepository(Sprint::class)
             ->findBy(['name' => 'Sprint PHPUnit Test']);
-        foreach ($sprints as $s) $this->entityManager->remove($s);
+        foreach ($sprints as $s) {
+            $this->entityManager->remove($s);
+        }
 
         $projet = $this->entityManager->getRepository(Project::class)
             ->findOneBy(['name' => 'Projet Sprint PHPUnit']);
-        if ($projet) $this->entityManager->remove($projet);
+        if ($projet) {
+            $this->entityManager->remove($projet);
+        }
 
         $user = $this->entityManager->getRepository(User::class)
             ->findOneBy(['email' => 'test.sprint@example.com']);
-        if ($user) $this->entityManager->remove($user);
+        if ($user) {
+            $this->entityManager->remove($user);
+        }
 
         $this->entityManager->flush();
     }
@@ -112,7 +121,7 @@ class SprintControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode(['email' => 'test.sprint@example.com', 'password' => 'MotDePasseTest123!'])
         );
-        $reponse     = json_decode($this->client->getResponse()->getContent(), true);
+        $reponse = json_decode($this->client->getResponse()->getContent(), true);
         $this->token = $reponse['token'];
     }
 
@@ -156,11 +165,11 @@ class SprintControllerTest extends WebTestCase
             'POST', '/api/sprints',
             [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer {$this->token}"],
             json_encode([
-                'name'      => 'Sprint PHPUnit Test',
-                'status'    => 'planifie',
+                'name' => 'Sprint PHPUnit Test',
+                'status' => 'planifie',
                 'projectId' => $this->projetId,
                 'startDate' => '2026-08-01',
-                'endDate'   => '2026-08-14',
+                'endDate' => '2026-08-14',
             ])
         );
 

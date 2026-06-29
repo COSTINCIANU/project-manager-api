@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // User.php — Entité utilisateur
 // Gère l'authentification et le profil utilisateur
@@ -79,7 +80,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private bool $isActive = true;
 
-
     // Refresh token — pour renouveler le JWT sans reconnexion
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $refreshToken = null;
@@ -101,84 +101,253 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->createdAt = new \DateTime();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getEmail(): ?string { return $this->email; }
-    public function setEmail(string $email): static { $this->email = $email; return $this; }
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
 
-    public function getUserIdentifier(): string { return (string) $this->email; }
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
 
     public function getRoles(): array
     {
         $roles = $this->roles;
         $roles[] = 'ROLE_USER';
-        if ($this->role === 'admin') {
+        if ('admin' === $this->role) {
             $roles[] = 'ROLE_ADMIN';
         }
+
         return array_unique($roles);
     }
 
-    public function setRoles(array $roles): static { $this->roles = $roles; return $this; }
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
 
-    public function getPassword(): ?string { return $this->password; }
-    public function setPassword(string $password): static { $this->password = $password; return $this; }
+        return $this;
+    }
 
-    public function getName(): ?string { return $this->name; }
-    public function setName(?string $name): static { $this->name = $name; return $this; }
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
 
-    public function getRole(): ?string { return $this->role; }
-    public function setRole(?string $role): static { $this->role = $role; return $this; }
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
 
-    public function getAvatar(): ?string { return $this->avatar; }
-    public function setAvatar(?string $avatar): static { $this->avatar = $avatar; return $this; }
+        return $this;
+    }
 
-    public function getCreatedAt(): ?\DateTimeInterface { return $this->createdAt; }
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
 
-    public function getResetToken(): ?string { return $this->resetToken; }
-    public function setResetToken(?string $resetToken): static { $this->resetToken = $resetToken; return $this; }
+    public function setName(?string $name): static
+    {
+        $this->name = $name;
 
-    public function getResetTokenExpiry(): ?\DateTimeInterface { return $this->resetTokenExpiry; }
-    public function setResetTokenExpiry(?\DateTimeInterface $expiry): static { $this->resetTokenExpiry = $expiry; return $this; }
+        return $this;
+    }
 
-    public function getTwoFactorCode(): ?string { return $this->twoFactorCode; }
-    public function setTwoFactorCode(?string $code): static { $this->twoFactorCode = $code; return $this; }
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
 
-    public function getTwoFactorExpiresAt(): ?\DateTimeInterface { return $this->twoFactorExpiresAt; }
-    public function setTwoFactorExpiresAt(?\DateTimeInterface $expiresAt): static { $this->twoFactorExpiresAt = $expiresAt; return $this; }
+    public function setRole(?string $role): static
+    {
+        $this->role = $role;
 
-    public function isTwoFactorEnabled(): bool { return $this->twoFactorEnabled; }
-    public function setTwoFactorEnabled(bool $enabled): static { $this->twoFactorEnabled = $enabled; return $this; }
+        return $this;
+    }
 
-    public function getPlan(): string { return $this->plan; }
-    public function setPlan(string $plan): static { $this->plan = $plan; return $this; }
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
 
-    public function getStripeCustomerId(): ?string { return $this->stripeCustomerId; }
-    public function setStripeCustomerId(?string $id): static { $this->stripeCustomerId = $id; return $this; }
+    public function setAvatar(?string $avatar): static
+    {
+        $this->avatar = $avatar;
 
-    public function getIsActive(): bool { return $this->isActive; }
-    public function setIsActive(bool $isActive): static { $this->isActive = $isActive; return $this; }
+        return $this;
+    }
 
-    public function getRefreshToken(): ?string { return $this->refreshToken; }
-    public function setRefreshToken(?string $refreshToken): static { $this->refreshToken = $refreshToken; return $this; }
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
 
-    public function getRefreshTokenExpiry(): ?\DateTimeInterface { return $this->refreshTokenExpiry; }
-    public function setRefreshTokenExpiry(?\DateTimeInterface $expiry): static { $this->refreshTokenExpiry = $expiry; return $this; }
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
 
+    public function setResetToken(?string $resetToken): static
+    {
+        $this->resetToken = $resetToken;
 
-    public function getDownloadToken(): ?string { return $this->downloadToken; }
-    public function setDownloadToken(?string $token): static { $this->downloadToken = $token; return $this; }
+        return $this;
+    }
 
-    public function getDownloadTokenExpiry(): ?\DateTimeInterface { return $this->downloadTokenExpiry; }
-    public function setDownloadTokenExpiry(?\DateTimeInterface $expiry): static { $this->downloadTokenExpiry = $expiry; return $this; }
+    public function getResetTokenExpiry(): ?\DateTimeInterface
+    {
+        return $this->resetTokenExpiry;
+    }
 
+    public function setResetTokenExpiry(?\DateTimeInterface $expiry): static
+    {
+        $this->resetTokenExpiry = $expiry;
+
+        return $this;
+    }
+
+    public function getTwoFactorCode(): ?string
+    {
+        return $this->twoFactorCode;
+    }
+
+    public function setTwoFactorCode(?string $code): static
+    {
+        $this->twoFactorCode = $code;
+
+        return $this;
+    }
+
+    public function getTwoFactorExpiresAt(): ?\DateTimeInterface
+    {
+        return $this->twoFactorExpiresAt;
+    }
+
+    public function setTwoFactorExpiresAt(?\DateTimeInterface $expiresAt): static
+    {
+        $this->twoFactorExpiresAt = $expiresAt;
+
+        return $this;
+    }
+
+    public function isTwoFactorEnabled(): bool
+    {
+        return $this->twoFactorEnabled;
+    }
+
+    public function setTwoFactorEnabled(bool $enabled): static
+    {
+        $this->twoFactorEnabled = $enabled;
+
+        return $this;
+    }
+
+    public function getPlan(): string
+    {
+        return $this->plan;
+    }
+
+    public function setPlan(string $plan): static
+    {
+        $this->plan = $plan;
+
+        return $this;
+    }
+
+    public function getStripeCustomerId(): ?string
+    {
+        return $this->stripeCustomerId;
+    }
+
+    public function setStripeCustomerId(?string $id): static
+    {
+        $this->stripeCustomerId = $id;
+
+        return $this;
+    }
+
+    public function getIsActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getRefreshToken(): ?string
+    {
+        return $this->refreshToken;
+    }
+
+    public function setRefreshToken(?string $refreshToken): static
+    {
+        $this->refreshToken = $refreshToken;
+
+        return $this;
+    }
+
+    public function getRefreshTokenExpiry(): ?\DateTimeInterface
+    {
+        return $this->refreshTokenExpiry;
+    }
+
+    public function setRefreshTokenExpiry(?\DateTimeInterface $expiry): static
+    {
+        $this->refreshTokenExpiry = $expiry;
+
+        return $this;
+    }
+
+    public function getDownloadToken(): ?string
+    {
+        return $this->downloadToken;
+    }
+
+    public function setDownloadToken(?string $token): static
+    {
+        $this->downloadToken = $token;
+
+        return $this;
+    }
+
+    public function getDownloadTokenExpiry(): ?\DateTimeInterface
+    {
+        return $this->downloadTokenExpiry;
+    }
+
+    public function setDownloadTokenExpiry(?\DateTimeInterface $expiry): static
+    {
+        $this->downloadTokenExpiry = $expiry;
+
+        return $this;
+    }
 
     public function __serialize(): array
     {
         $data = (array) $this;
         $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
+
         return $data;
     }
 
     #[\Deprecated]
-    public function eraseCredentials(): void {}
+    public function eraseCredentials(): void
+    {
+    }
 }

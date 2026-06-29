@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // RegleAutomatisationControllerTest.php — Tests PHPUnit
 // Teste les routes CRUD des règles d'automatisation
@@ -7,11 +8,11 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\User;
 use App\Entity\Project;
 use App\Entity\RegleAutomatisation;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class RegleAutomatisationControllerTest extends WebTestCase
 {
@@ -33,7 +34,7 @@ class RegleAutomatisationControllerTest extends WebTestCase
     // =====================
     protected function setUp(): void
     {
-        $this->client       = static::createClient();
+        $this->client = static::createClient();
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
 
         $this->nettoyerDonneesTest();
@@ -124,12 +125,12 @@ class RegleAutomatisationControllerTest extends WebTestCase
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-                'email'    => 'test.regles@example.com',
+                'email' => 'test.regles@example.com',
                 'password' => 'MotDePasseTest123!',
             ])
         );
 
-        $reponse     = json_decode($this->client->getResponse()->getContent(), true);
+        $reponse = json_decode($this->client->getResponse()->getContent(), true);
         $this->token = $reponse['token'];
     }
 
@@ -163,15 +164,15 @@ class RegleAutomatisationControllerTest extends WebTestCase
             [],
             [],
             [
-                'CONTENT_TYPE'       => 'application/json',
+                'CONTENT_TYPE' => 'application/json',
                 'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
             ],
             json_encode([
-                'nom'               => 'Test PHPUnit — règle automatique',
-                'declencheur'       => 'tache_statut_change',
+                'nom' => 'Test PHPUnit — règle automatique',
+                'declencheur' => 'tache_statut_change',
                 'valeurDeclencheur' => 'Terminé',
-                'action'            => 'changer_priorite',
-                'valeurAction'      => 'haute',
+                'action' => 'changer_priorite',
+                'valeurAction' => 'haute',
             ])
         );
 
@@ -179,14 +180,14 @@ class RegleAutomatisationControllerTest extends WebTestCase
 
         $données = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertArrayHasKey('id',          $données, 'La règle doit avoir un identifiant');
-        $this->assertArrayHasKey('nom',         $données, 'La règle doit avoir un nom');
+        $this->assertArrayHasKey('id', $données, 'La règle doit avoir un identifiant');
+        $this->assertArrayHasKey('nom', $données, 'La règle doit avoir un nom');
         $this->assertArrayHasKey('declencheur', $données, 'La règle doit avoir un déclencheur');
-        $this->assertArrayHasKey('action',      $données, 'La règle doit avoir une action');
-        $this->assertArrayHasKey('active',      $données, 'La règle doit avoir un état actif');
+        $this->assertArrayHasKey('action', $données, 'La règle doit avoir une action');
+        $this->assertArrayHasKey('active', $données, 'La règle doit avoir un état actif');
         $this->assertEquals('Test PHPUnit — règle automatique', $données['nom']);
-        $this->assertEquals('tache_statut_change',              $données['declencheur']);
-        $this->assertEquals('changer_priorite',                 $données['action']);
+        $this->assertEquals('tache_statut_change', $données['declencheur']);
+        $this->assertEquals('changer_priorite', $données['action']);
         $this->assertTrue($données['active'], 'Une nouvelle règle doit être active par défaut');
     }
 
@@ -201,7 +202,7 @@ class RegleAutomatisationControllerTest extends WebTestCase
             [],
             [],
             [
-                'CONTENT_TYPE'       => 'application/json',
+                'CONTENT_TYPE' => 'application/json',
                 'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
             ],
             json_encode(['valeurAction' => 'haute'])
@@ -225,17 +226,17 @@ class RegleAutomatisationControllerTest extends WebTestCase
             [],
             [],
             [
-                'CONTENT_TYPE'       => 'application/json',
+                'CONTENT_TYPE' => 'application/json',
                 'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
             ],
             json_encode([
-                'nom'         => 'Test toggle',
+                'nom' => 'Test toggle',
                 'declencheur' => 'tache_creee',
-                'action'      => 'notifier_manager',
+                'action' => 'notifier_manager',
             ])
         );
 
-        $regle   = json_decode($this->client->getResponse()->getContent(), true);
+        $regle = json_decode($this->client->getResponse()->getContent(), true);
         $regleId = $regle['id'];
 
         // Toggle — doit passer de active=true à active=false
@@ -265,17 +266,17 @@ class RegleAutomatisationControllerTest extends WebTestCase
             [],
             [],
             [
-                'CONTENT_TYPE'       => 'application/json',
+                'CONTENT_TYPE' => 'application/json',
                 'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
             ],
             json_encode([
-                'nom'         => 'Test suppression',
+                'nom' => 'Test suppression',
                 'declencheur' => 'tache_creee',
-                'action'      => 'notifier_manager',
+                'action' => 'notifier_manager',
             ])
         );
 
-        $regle   = json_decode($this->client->getResponse()->getContent(), true);
+        $regle = json_decode($this->client->getResponse()->getContent(), true);
         $regleId = $regle['id'];
 
         // Supprime la règle
@@ -298,7 +299,7 @@ class RegleAutomatisationControllerTest extends WebTestCase
             ['HTTP_AUTHORIZATION' => "Bearer {$this->token}"]
         );
 
-        $regles     = json_decode($this->client->getResponse()->getContent(), true);
+        $regles = json_decode($this->client->getResponse()->getContent(), true);
         $idsRestants = array_column($regles, 'id');
         $this->assertNotContains($regleId, $idsRestants, 'La règle supprimée ne doit plus être dans la liste');
     }

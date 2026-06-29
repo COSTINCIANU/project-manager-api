@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // InvoiceService.php — Génération des factures PDF
 // Crée une facture personnalisée avec logo et infos
@@ -28,7 +29,7 @@ class InvoiceService
 
         $dompdf = new Dompdf($options);
 
-        $nomPlan = match($plan) {
+        $nomPlan = match ($plan) {
             'pro' => 'Project Manager Pro',
             'enterprise' => 'Project Manager Entreprise',
             default => 'Project Manager Gratuit',

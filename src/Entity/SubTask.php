@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity;
 
 use App\Repository\SubTaskRepository;
@@ -22,14 +23,44 @@ class SubTask
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Task $task = null;
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getName(): ?string { return $this->name; }
-    public function setName(string $name): static { $this->name = $name; return $this; }
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
 
-    public function isDone(): ?bool { return $this->done; }
-    public function setDone(bool $done): static { $this->done = $done; return $this; }
+    public function setName(string $name): static
+    {
+        $this->name = $name;
 
-    public function getTask(): ?Task { return $this->task; }
-    public function setTask(?Task $task): static { $this->task = $task; return $this; }
+        return $this;
+    }
+
+    public function isDone(): ?bool
+    {
+        return $this->done;
+    }
+
+    public function setDone(bool $done): static
+    {
+        $this->done = $done;
+
+        return $this;
+    }
+
+    public function getTask(): ?Task
+    {
+        return $this->task;
+    }
+
+    public function setTask(?Task $task): static
+    {
+        $this->task = $task;
+
+        return $this;
+    }
 }

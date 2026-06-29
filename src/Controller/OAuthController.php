@@ -7,9 +7,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -67,11 +66,11 @@ class OAuthController extends AbstractController
 
             // Redirection vers le frontend avec le token
             return new RedirectResponse(
-                'https://project-manager.costincianu.fr?oauth_token=' . $token . '&oauth_email=' . urlencode($email)
+                'https://project-manager.costincianu.fr?oauth_token='.$token.'&oauth_email='.urlencode($email)
             );
         } catch (\Exception $e) {
             return new RedirectResponse(
-                'https://project-manager.costincianu.fr?oauth_error=' . urlencode($e->getMessage())
+                'https://project-manager.costincianu.fr?oauth_error='.urlencode($e->getMessage())
             );
         }
     }
@@ -121,11 +120,11 @@ class OAuthController extends AbstractController
 
             // Redirection vers le frontend avec le token
             return new RedirectResponse(
-                'https://project-manager.costincianu.fr?oauth_token=' . $token . '&oauth_email=' . urlencode($email)
+                'https://project-manager.costincianu.fr?oauth_token='.$token.'&oauth_email='.urlencode($email)
             );
         } catch (\Exception $e) {
             return new RedirectResponse(
-                'https://project-manager.costincianu.fr?oauth_error=' . urlencode($e->getMessage())
+                'https://project-manager.costincianu.fr?oauth_error='.urlencode($e->getMessage())
             );
         }
     }

@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // InvitationController.php — Gestion des invitations
 // Permet d'inviter des utilisateurs à rejoindre
@@ -54,20 +55,20 @@ class InvitationController extends AbstractController
         $email = (new Email())
             ->from('noreply@costincianu.fr')
             ->to($data['email'])
-            ->subject('Invitation à rejoindre ' . $project->getName())
+            ->subject('Invitation à rejoindre '.$project->getName())
             ->html(
-                '<h2>Vous avez été invité à rejoindre le projet <strong>' . $project->getName() . '</strong></h2>' .
-                '<p>Cliquez sur le lien ci-dessous pour accepter l\'invitation :</p>' .
-                '<a href="http://project-manager.xena8933.odns.fr/invitation/' . $invitation->getToken() . '" ' .
-                'style="background:#111;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;">' .
-                'Accepter l\'invitation</a>' .
+                '<h2>Vous avez été invité à rejoindre le projet <strong>'.$project->getName().'</strong></h2>'.
+                '<p>Cliquez sur le lien ci-dessous pour accepter l\'invitation :</p>'.
+                '<a href="http://project-manager.xena8933.odns.fr/invitation/'.$invitation->getToken().'" '.
+                'style="background:#111;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;">'.
+                'Accepter l\'invitation</a>'.
                 '<p style="color:#aaa;font-size:12px;margin-top:20px;">Si vous ne souhaitez pas rejoindre ce projet, ignorez cet email.</p>'
             );
 
         $mailer->send($email);
 
         return $this->json([
-            'message' => 'Invitation envoyée à ' . $data['email'],
+            'message' => 'Invitation envoyée à '.$data['email'],
             'token' => $invitation->getToken(),
         ], 201);
     }
@@ -79,10 +80,10 @@ class InvitationController extends AbstractController
     public function list(int $projectId, EntityManagerInterface $em): JsonResponse
     {
         $invitations = $em->getRepository(Invitation::class)->findBy([
-            'projectId' => $projectId
+            'projectId' => $projectId,
         ]);
 
-        $data = array_map(function($inv) {
+        $data = array_map(function ($inv) {
             return [
                 'id' => $inv->getId(),
                 'email' => $inv->getEmail(),

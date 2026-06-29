@@ -136,6 +136,6 @@ class TwoFactorController extends AbstractController
         $user->setTwoFactorEnabled($enabled);
         $em->flush();
 
-        return new JsonResponse(['message' => '2FA ' . ($enabled ? 'activé' : 'désactivé')]);
+        return new JsonResponse(['message' => '2FA '.($enabled ? 'activé' : 'désactivé')]);
     }
 }

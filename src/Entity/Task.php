@@ -1,7 +1,7 @@
 <?php
+
 namespace App\Entity;
 
-use App\Entity\TaskComment;
 use App\Repository\TaskRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -64,7 +64,6 @@ class Task
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $externalLink = null;
 
-
     #[ORM\OneToMany(mappedBy: 'task', targetEntity: SubTask::class, cascade: ['persist', 'remove'])]
     private Collection $subTasks;
 
@@ -81,55 +80,203 @@ class Task
         $this->attachments = new ArrayCollection();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getName(): ?string { return $this->name; }
-    public function setName(string $name): static { $this->name = $name; return $this; }
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
 
-    public function getDescription(): ?string { return $this->description; }
-    public function setDescription(?string $description): static { $this->description = $description; return $this; }
+    public function setName(string $name): static
+    {
+        $this->name = $name;
 
-    public function getPriority(): ?string { return $this->priority; }
-    public function setPriority(?string $priority): static { $this->priority = $priority; return $this; }
+        return $this;
+    }
 
-    public function getTicketType(): ?string { return $this->ticketType; }
-    public function setTicketType(?string $ticketType): static { $this->ticketType = $ticketType; return $this; }
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
 
-    public function isDone(): ?bool { return $this->done; }
-    public function setDone(bool $done): static { $this->done = $done; return $this; }
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
 
-    public function isInProgress(): ?bool { return $this->inProgress; }
-    public function setInProgress(bool $inProgress): static { $this->inProgress = $inProgress; return $this; }
+        return $this;
+    }
 
-    public function getDueDate(): ?string { return $this->dueDate; }
-    public function setDueDate(?string $dueDate): static { $this->dueDate = $dueDate; return $this; }
+    public function getPriority(): ?string
+    {
+        return $this->priority;
+    }
 
-    public function getProjectId(): ?int { return $this->projectId; }
-    public function setProjectId(int $projectId): static { $this->projectId = $projectId; return $this; }
+    public function setPriority(?string $priority): static
+    {
+        $this->priority = $priority;
 
-    public function getEstimatedTime(): ?int { return $this->estimatedTime; }
-    public function setEstimatedTime(?int $estimatedTime): static { $this->estimatedTime = $estimatedTime; return $this; }
+        return $this;
+    }
 
-    public function getElapsedTime(): ?int { return $this->elapsedTime; }
-    public function setElapsedTime(?int $elapsedTime): static { $this->elapsedTime = $elapsedTime; return $this; }
+    public function getTicketType(): ?string
+    {
+        return $this->ticketType;
+    }
 
-    public function getTags(): ?array { return $this->tags; }
-    public function setTags(?array $tags): static { $this->tags = $tags; return $this; }
+    public function setTicketType(?string $ticketType): static
+    {
+        $this->ticketType = $ticketType;
 
-    public function getAssignedTo(): ?int { return $this->assignedTo; }
-    public function setAssignedTo(?int $assignedTo): static { $this->assignedTo = $assignedTo; return $this; }
+        return $this;
+    }
 
-    public function getDependsOn(): ?int { return $this->dependsOn; }
-    public function setDependsOn(?int $dependsOn): static { $this->dependsOn = $dependsOn; return $this; }
+    public function isDone(): ?bool
+    {
+        return $this->done;
+    }
 
-    public function getSprintId(): ?int { return $this->sprintId; }
-    public function setSprintId(?int $sprintId): static { $this->sprintId = $sprintId; return $this; }
+    public function setDone(bool $done): static
+    {
+        $this->done = $done;
 
-    public function getExternalLink(): ?string { return $this->externalLink; }
-    public function setExternalLink(?string $externalLink): static { $this->externalLink = $externalLink; return $this; }
+        return $this;
+    }
 
+    public function isInProgress(): ?bool
+    {
+        return $this->inProgress;
+    }
 
-    public function getSubTasks(): Collection { return $this->subTasks; }
-    public function getComments(): Collection { return $this->comments; }
-    public function getAttachments(): Collection { return $this->attachments; }
+    public function setInProgress(bool $inProgress): static
+    {
+        $this->inProgress = $inProgress;
+
+        return $this;
+    }
+
+    public function getDueDate(): ?string
+    {
+        return $this->dueDate;
+    }
+
+    public function setDueDate(?string $dueDate): static
+    {
+        $this->dueDate = $dueDate;
+
+        return $this;
+    }
+
+    public function getProjectId(): ?int
+    {
+        return $this->projectId;
+    }
+
+    public function setProjectId(int $projectId): static
+    {
+        $this->projectId = $projectId;
+
+        return $this;
+    }
+
+    public function getEstimatedTime(): ?int
+    {
+        return $this->estimatedTime;
+    }
+
+    public function setEstimatedTime(?int $estimatedTime): static
+    {
+        $this->estimatedTime = $estimatedTime;
+
+        return $this;
+    }
+
+    public function getElapsedTime(): ?int
+    {
+        return $this->elapsedTime;
+    }
+
+    public function setElapsedTime(?int $elapsedTime): static
+    {
+        $this->elapsedTime = $elapsedTime;
+
+        return $this;
+    }
+
+    public function getTags(): ?array
+    {
+        return $this->tags;
+    }
+
+    public function setTags(?array $tags): static
+    {
+        $this->tags = $tags;
+
+        return $this;
+    }
+
+    public function getAssignedTo(): ?int
+    {
+        return $this->assignedTo;
+    }
+
+    public function setAssignedTo(?int $assignedTo): static
+    {
+        $this->assignedTo = $assignedTo;
+
+        return $this;
+    }
+
+    public function getDependsOn(): ?int
+    {
+        return $this->dependsOn;
+    }
+
+    public function setDependsOn(?int $dependsOn): static
+    {
+        $this->dependsOn = $dependsOn;
+
+        return $this;
+    }
+
+    public function getSprintId(): ?int
+    {
+        return $this->sprintId;
+    }
+
+    public function setSprintId(?int $sprintId): static
+    {
+        $this->sprintId = $sprintId;
+
+        return $this;
+    }
+
+    public function getExternalLink(): ?string
+    {
+        return $this->externalLink;
+    }
+
+    public function setExternalLink(?string $externalLink): static
+    {
+        $this->externalLink = $externalLink;
+
+        return $this;
+    }
+
+    public function getSubTasks(): Collection
+    {
+        return $this->subTasks;
+    }
+
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function getAttachments(): Collection
+    {
+        return $this->attachments;
+    }
 }

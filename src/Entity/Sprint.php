@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // Sprint.php — Entité Sprint
 // Un sprint est une période de travail fixe
@@ -56,6 +57,7 @@ class Sprint
     public function setName(string $name): static
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -67,6 +69,7 @@ class Sprint
     public function setGoal(?string $goal): static
     {
         $this->goal = $goal;
+
         return $this;
     }
 
@@ -78,6 +81,7 @@ class Sprint
     public function setStatus(string $status): static
     {
         $this->status = $status;
+
         return $this;
     }
 
@@ -89,6 +93,7 @@ class Sprint
     public function setStartDate(?string $startDate): static
     {
         $this->startDate = $startDate;
+
         return $this;
     }
 
@@ -100,6 +105,7 @@ class Sprint
     public function setEndDate(?string $endDate): static
     {
         $this->endDate = $endDate;
+
         return $this;
     }
 
@@ -111,6 +117,7 @@ class Sprint
     public function setProjectId(int $projectId): static
     {
         $this->projectId = $projectId;
+
         return $this;
     }
 }

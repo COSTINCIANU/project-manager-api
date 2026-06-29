@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // WikiController.php — Wiki par projet
 // CRUD complet pour les pages Wiki en Markdown
@@ -29,7 +30,7 @@ class WikiController extends AbstractController
             ['createdAt' => 'DESC']
         );
 
-        $data = array_map(function($page) {
+        $data = array_map(function ($page) {
             return [
                 'id' => $page->getId(),
                 'title' => $page->getTitle(),

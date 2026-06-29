@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // TaskController.php — Gestion des tâches
 // Permissions selon le rôle métier :
@@ -10,18 +11,16 @@
 
 namespace App\Controller;
 
-use App\Entity\Task;
 use App\Entity\SubTask;
+use App\Entity\Task;
+use App\Service\ActionLogService;
 use App\Service\PermissionService;
+use App\Service\SlackService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Service\ActionLogService;
-use App\Service\SlackService;
-
-
 
 #[Route('/api/tasks')]
 class TaskController extends AbstractController
@@ -32,7 +31,7 @@ class TaskController extends AbstractController
     private function taskToArray(Task $task): array
     {
         // Sous-tâches
-        $subTasks = array_map(function($subTask) {
+        $subTasks = array_map(function ($subTask) {
             return [
                 'id' => $subTask->getId(),
                 'name' => $subTask->getName(),
@@ -73,16 +72,16 @@ class TaskController extends AbstractController
 
         if ($projectId) {
             // Filtre les tâches par projet
-            $tasks = $em->getRepository(Task::class)->findBy(['projectId' => (int)$projectId]);
+            $tasks = $em->getRepository(Task::class)->findBy(['projectId' => (int) $projectId]);
         } else {
             // Retourne toutes les tâches si pas de filtre
             $tasks = $em->getRepository(Task::class)->findAll();
         }
 
-        $data = array_map(fn($task) => $this->taskToArray($task), $tasks);
+        $data = array_map(fn ($task) => $this->taskToArray($task), $tasks);
+
         return $this->json($data);
     }
-
 
     // =====================
     // GET — Récupérer une tâche par son ID
@@ -148,18 +147,18 @@ class TaskController extends AbstractController
         // =====================
         // Log de l'action — enregistre la création dans l'historique
         // =====================
-        $actionLog->log('create_task', 'Tâche créée : ' . $task->getName(), 'task', $task->getId());
-
+        $actionLog->log('create_task', 'Tâche créée : '.$task->getName(), 'task', $task->getId());
 
         // =====================
         // Notification Slack — nouvelle tâche créée
         // =====================
         $slack->notifyTaskCreated(
             $task->getName(),
-            'Projet #' . $task->getProjectId(),
+            'Projet #'.$task->getProjectId(),
             $task->getPriority() ?? 'normale',
             $this->getUser()->getUserIdentifier(),
         );
+
         return $this->json($this->taskToArray($task), 201);
     }
 
@@ -197,13 +196,12 @@ class TaskController extends AbstractController
         $task->setExternalLink($data['externalLink'] ?? $task->getExternalLink());
         $task->setTicketType($data['ticketType'] ?? $task->getTicketType());
 
-
         $em->flush();
 
         // =====================
         // Log de l'action — enregistre la modification dans l'historique
         // =====================
-        $actionLog->log('update_task', 'Tâche modifiée : ' . $task->getName(), 'task', $task->getId());
+        $actionLog->log('update_task', 'Tâche modifiée : '.$task->getName(), 'task', $task->getId());
 
         return $this->json($this->taskToArray($task));
     }
@@ -229,7 +227,7 @@ class TaskController extends AbstractController
         // =====================
         // Log de l'action — enregistre la suppression AVANT de supprimer
         // =====================
-        $actionLog->log('delete_task', 'Tâche supprimée : ' . $task->getName(), 'task', $id);
+        $actionLog->log('delete_task', 'Tâche supprimée : '.$task->getName(), 'task', $id);
         $em->flush();
 
         return $this->json(['message' => 'Tâche supprimée avec succès']);

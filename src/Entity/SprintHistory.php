@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // SprintHistory.php — Historique journalier d'un sprint
 // Enregistre chaque jour l'état du sprint pour
@@ -41,20 +42,68 @@ class SprintHistory
     #[ORM\Column]
     private ?int $tasksDone = null;
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getSprintId(): ?int { return $this->sprintId; }
-    public function setSprintId(int $sprintId): static { $this->sprintId = $sprintId; return $this; }
+    public function getSprintId(): ?int
+    {
+        return $this->sprintId;
+    }
 
-    public function getDate(): ?\DateTime { return $this->date; }
-    public function setDate(\DateTime $date): static { $this->date = $date; return $this; }
+    public function setSprintId(int $sprintId): static
+    {
+        $this->sprintId = $sprintId;
 
-    public function getTasksTotal(): ?int { return $this->tasksTotal; }
-    public function setTasksTotal(int $tasksTotal): static { $this->tasksTotal = $tasksTotal; return $this; }
+        return $this;
+    }
 
-    public function getTasksRemaining(): ?int { return $this->tasksRemaining; }
-    public function setTasksRemaining(int $tasksRemaining): static { $this->tasksRemaining = $tasksRemaining; return $this; }
+    public function getDate(): ?\DateTime
+    {
+        return $this->date;
+    }
 
-    public function getTasksDone(): ?int { return $this->tasksDone; }
-    public function setTasksDone(int $tasksDone): static { $this->tasksDone = $tasksDone; return $this; }
+    public function setDate(\DateTime $date): static
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    public function getTasksTotal(): ?int
+    {
+        return $this->tasksTotal;
+    }
+
+    public function setTasksTotal(int $tasksTotal): static
+    {
+        $this->tasksTotal = $tasksTotal;
+
+        return $this;
+    }
+
+    public function getTasksRemaining(): ?int
+    {
+        return $this->tasksRemaining;
+    }
+
+    public function setTasksRemaining(int $tasksRemaining): static
+    {
+        $this->tasksRemaining = $tasksRemaining;
+
+        return $this;
+    }
+
+    public function getTasksDone(): ?int
+    {
+        return $this->tasksDone;
+    }
+
+    public function setTasksDone(int $tasksDone): static
+    {
+        $this->tasksDone = $tasksDone;
+
+        return $this;
+    }
 }

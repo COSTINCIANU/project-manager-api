@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // CustomFieldControllerTest.php — Tests PHPUnit
 // Teste les routes CustomField :
@@ -8,12 +9,12 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\User;
+use App\Entity\CustomField;
 use App\Entity\Project;
 use App\Entity\Task;
-use App\Entity\CustomField;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class CustomFieldControllerTest extends WebTestCase
 {
@@ -26,7 +27,7 @@ class CustomFieldControllerTest extends WebTestCase
 
     protected function setUp(): void
     {
-        $this->client        = static::createClient();
+        $this->client = static::createClient();
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $this->nettoyerDonneesTest();
         $this->creerDonneesTest();
@@ -44,22 +45,30 @@ class CustomFieldControllerTest extends WebTestCase
         // Supprime les champs personnalisés de test
         $champs = $this->entityManager->getRepository(CustomField::class)
             ->findBy(['name' => 'Champ PHPUnit Test']);
-        foreach ($champs as $c) $this->entityManager->remove($c);
+        foreach ($champs as $c) {
+            $this->entityManager->remove($c);
+        }
 
         // Supprime les tâches de test
         $taches = $this->entityManager->getRepository(Task::class)
             ->findBy(['name' => 'Tâche CustomField PHPUnit']);
-        foreach ($taches as $t) $this->entityManager->remove($t);
+        foreach ($taches as $t) {
+            $this->entityManager->remove($t);
+        }
 
         // Supprime le projet de test
         $projet = $this->entityManager->getRepository(Project::class)
             ->findOneBy(['name' => 'Projet CustomField PHPUnit']);
-        if ($projet) $this->entityManager->remove($projet);
+        if ($projet) {
+            $this->entityManager->remove($projet);
+        }
 
         // Supprime l'utilisateur de test
         $user = $this->entityManager->getRepository(User::class)
             ->findOneBy(['email' => 'test.customfield@example.com']);
-        if ($user) $this->entityManager->remove($user);
+        if ($user) {
+            $this->entityManager->remove($user);
+        }
 
         $this->entityManager->flush();
     }
@@ -124,7 +133,7 @@ class CustomFieldControllerTest extends WebTestCase
 
         // On garde l'id du champ tâche pour les tests PUT/DELETE
         $this->champId = $champTache->getId();
-            }
+    }
 
     private function connecter(): void
     {
@@ -133,7 +142,7 @@ class CustomFieldControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode(['email' => 'test.customfield@example.com', 'password' => 'MotDePasseTest123!'])
         );
-        $reponse     = json_decode($this->client->getResponse()->getContent(), true);
+        $reponse = json_decode($this->client->getResponse()->getContent(), true);
         $this->token = $reponse['token'];
     }
 
@@ -179,18 +188,18 @@ class CustomFieldControllerTest extends WebTestCase
             [], [],
             ['CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer {$this->token}"],
             json_encode([
-                'name'      => 'Champ PHPUnit Test',
-                'label'     => 'Champ PHPUnit Test',
-                'type'      => 'number',
-                'value'     => '42',
+                'name' => 'Champ PHPUnit Test',
+                'label' => 'Champ PHPUnit Test',
+                'type' => 'number',
+                'value' => '42',
                 'projectId' => $this->projetId,
-                'taskId'    => $this->tacheId,
+                'taskId' => $this->tacheId,
             ])
         );
 
         $this->assertResponseIsSuccessful();
         $données = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('id',   $données);
+        $this->assertArrayHasKey('id', $données);
         $this->assertArrayHasKey('name', $données);
         $this->assertEquals('Champ PHPUnit Test', $données['name']);
 
@@ -212,7 +221,7 @@ class CustomFieldControllerTest extends WebTestCase
             [], [],
             ['CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer {$this->token}"],
             json_encode([
-                'name'  => 'Champ PHPUnit Test',
+                'name' => 'Champ PHPUnit Test',
                 'value' => 'Valeur mise à jour',
             ])
         );

@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // PushController.php — Notifications Push
 // Gère les abonnements et l'envoi de notifications
@@ -9,8 +10,8 @@ namespace App\Controller;
 
 use App\Entity\PushSubscription;
 use Doctrine\ORM\EntityManagerInterface;
-use Minishlink\WebPush\WebPush;
 use Minishlink\WebPush\Subscription;
+use Minishlink\WebPush\WebPush;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -124,7 +125,7 @@ class PushController extends AbstractController
             ]);
 
             $webPush->queueNotification($subscription, $payload);
-            $sent++;
+            ++$sent;
         }
 
         // Flush — envoie toutes les notifications en attente
@@ -142,7 +143,7 @@ class PushController extends AbstractController
 
         $em->flush();
 
-        return $this->json(['message' => $sent . ' notification(s) envoyée(s)']);
+        return $this->json(['message' => $sent.' notification(s) envoyée(s)']);
     }
 
     // =====================

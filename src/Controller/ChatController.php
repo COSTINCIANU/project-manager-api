@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // ChatController.php — Chat d'équipe temps réel
 // Gère les messages de chat via Mercure (WebSocket)
@@ -12,9 +13,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/chat')]
 class ChatController extends AbstractController
@@ -32,7 +33,7 @@ class ChatController extends AbstractController
             50
         );
 
-        $data = array_map(function($message) {
+        $data = array_map(function ($message) {
             return [
                 'id' => $message->getId(),
                 'content' => $message->getContent(),
@@ -109,7 +110,7 @@ class ChatController extends AbstractController
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
-        if (!$user || $user->getRole() !== 'admin') {
+        if (!$user || 'admin' !== $user->getRole()) {
             return $this->json(['error' => 'Accès refusé'], 403);
         }
 

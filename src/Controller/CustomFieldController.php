@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // CustomFieldController.php — Gestion des champs personnalisés
 // Permet d'ajouter des champs sur mesure aux projets et tâches
@@ -33,7 +34,7 @@ class CustomFieldController extends AbstractController
             'taskId' => null, // Uniquement les champs du projet, pas des tâches
         ]);
 
-        return $this->json(array_map(fn($c) => $this->champVersTableau($c), $champs));
+        return $this->json(array_map(fn ($c) => $this->champVersTableau($c), $champs));
     }
 
     // =====================
@@ -46,7 +47,7 @@ class CustomFieldController extends AbstractController
             'taskId' => $taskId,
         ]);
 
-        return $this->json(array_map(fn($c) => $this->champVersTableau($c), $champs));
+        return $this->json(array_map(fn ($c) => $this->champVersTableau($c), $champs));
     }
 
     // =====================

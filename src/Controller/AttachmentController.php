@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // AttachmentController.php — Gestion des fichiers
 // Permet d'uploader et télécharger des fichiers
@@ -13,7 +14,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/tasks')]
@@ -26,7 +26,7 @@ class AttachmentController extends AbstractController
     {
         // Les fichiers sont stockés dans public/uploads/
         // On utilise __DIR__ pour trouver le chemin absolu
-        $this->uploadDir = __DIR__ . '/../../public/uploads/';
+        $this->uploadDir = __DIR__.'/../../public/uploads/';
     }
 
     // =====================
@@ -42,14 +42,14 @@ class AttachmentController extends AbstractController
 
         $attachments = $task->getAttachments()->toArray();
 
-        $data = array_map(function($attachment) {
+        $data = array_map(function ($attachment) {
             return [
                 'id' => $attachment->getId(),
                 'filename' => $attachment->getFilename(),
                 'path' => $attachment->getPath(),
                 'mimeType' => $attachment->getMimeType(),
                 'uploadedAt' => $attachment->getUploadedAt()->format('Y-m-d H:i:s'),
-                'url' => '/uploads/' . $attachment->getPath(),
+                'url' => '/uploads/'.$attachment->getPath(),
             ];
         }, $attachments);
 
@@ -79,7 +79,7 @@ class AttachmentController extends AbstractController
         }
 
         // Génère un nom unique pour le fichier
-        $newFilename = uniqid() . '.' . $file->getClientOriginalExtension();
+        $newFilename = uniqid().'.'.$file->getClientOriginalExtension();
 
         // Crée le dossier uploads s'il n'existe pas
         if (!is_dir($this->uploadDir)) {
@@ -105,7 +105,7 @@ class AttachmentController extends AbstractController
             'path' => $attachment->getPath(),
             'mimeType' => $attachment->getMimeType(),
             'uploadedAt' => $attachment->getUploadedAt()->format('Y-m-d H:i:s'),
-            'url' => '/uploads/' . $attachment->getPath(),
+            'url' => '/uploads/'.$attachment->getPath(),
         ], 201);
     }
 
@@ -121,7 +121,7 @@ class AttachmentController extends AbstractController
         }
 
         // Supprime le fichier physique
-        $filePath = $this->uploadDir . $attachment->getPath();
+        $filePath = $this->uploadDir.$attachment->getPath();
         if (file_exists($filePath)) {
             unlink($filePath);
         }

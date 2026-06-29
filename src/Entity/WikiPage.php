@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // WikiPage.php — Entité page Wiki
 // Chaque projet peut avoir plusieurs pages Wiki
@@ -47,22 +48,73 @@ class WikiPage
         $this->createdAt = new \DateTime();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getTitle(): ?string { return $this->title; }
-    public function setTitle(string $title): static { $this->title = $title; return $this; }
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
 
-    public function getContent(): ?string { return $this->content; }
-    public function setContent(?string $content): static { $this->content = $content; return $this; }
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
 
-    public function getProjectId(): ?int { return $this->projectId; }
-    public function setProjectId(int $projectId): static { $this->projectId = $projectId; return $this; }
+        return $this;
+    }
 
-    public function getAuthorEmail(): ?string { return $this->authorEmail; }
-    public function setAuthorEmail(string $email): static { $this->authorEmail = $email; return $this; }
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
 
-    public function getCreatedAt(): ?\DateTimeInterface { return $this->createdAt; }
+    public function setContent(?string $content): static
+    {
+        $this->content = $content;
 
-    public function getUpdatedAt(): ?\DateTimeInterface { return $this->updatedAt; }
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): static { $this->updatedAt = $updatedAt; return $this; }
+        return $this;
+    }
+
+    public function getProjectId(): ?int
+    {
+        return $this->projectId;
+    }
+
+    public function setProjectId(int $projectId): static
+    {
+        $this->projectId = $projectId;
+
+        return $this;
+    }
+
+    public function getAuthorEmail(): ?string
+    {
+        return $this->authorEmail;
+    }
+
+    public function setAuthorEmail(string $email): static
+    {
+        $this->authorEmail = $email;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
 }

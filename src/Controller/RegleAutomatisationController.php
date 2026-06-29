@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // RegleAutomatisationController.php — API des règles
 // Routes :
@@ -12,8 +13,8 @@
 namespace App\Controller;
 
 use App\Entity\RegleAutomatisation;
-use App\Repository\RegleAutomatisationRepository;
 use App\Repository\ProjectRepository;
+use App\Repository\RegleAutomatisationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,10 +24,11 @@ use Symfony\Component\Routing\Attribute\Route;
 class RegleAutomatisationController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface        $em,
+        private EntityManagerInterface $em,
         private RegleAutomatisationRepository $regleRepository,
-        private ProjectRepository             $projetRepository,
-    ) {}
+        private ProjectRepository $projetRepository,
+    ) {
+    }
 
     // =====================
     // LISTE DES RÈGLES D'UN PROJET
@@ -45,7 +47,7 @@ class RegleAutomatisationController extends AbstractController
         );
 
         return $this->json(array_map(
-            fn(RegleAutomatisation $r) => $r->versTableau(),
+            fn (RegleAutomatisation $r) => $r->versTableau(),
             $regles
         ));
     }
@@ -98,12 +100,24 @@ class RegleAutomatisationController extends AbstractController
         $donnees = json_decode($request->getContent(), true);
 
         // Met à jour uniquement les champs fournis
-        if (isset($donnees['nom']))               $regle->setNom($donnees['nom']);
-        if (isset($donnees['declencheur']))        $regle->setDeclencheur($donnees['declencheur']);
-        if (isset($donnees['valeurDeclencheur']))  $regle->setValeurDeclencheur($donnees['valeurDeclencheur']);
-        if (isset($donnees['action']))             $regle->setAction($donnees['action']);
-        if (isset($donnees['valeurAction']))       $regle->setValeurAction($donnees['valeurAction']);
-        if (isset($donnees['active']))             $regle->setActive($donnees['active']);
+        if (isset($donnees['nom'])) {
+            $regle->setNom($donnees['nom']);
+        }
+        if (isset($donnees['declencheur'])) {
+            $regle->setDeclencheur($donnees['declencheur']);
+        }
+        if (isset($donnees['valeurDeclencheur'])) {
+            $regle->setValeurDeclencheur($donnees['valeurDeclencheur']);
+        }
+        if (isset($donnees['action'])) {
+            $regle->setAction($donnees['action']);
+        }
+        if (isset($donnees['valeurAction'])) {
+            $regle->setValeurAction($donnees['valeurAction']);
+        }
+        if (isset($donnees['active'])) {
+            $regle->setActive($donnees['active']);
+        }
 
         $this->em->flush();
 

@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // AuthControllerTest.php — Tests de l'authentification
 // Teste les routes : inscription, connexion, refresh token
@@ -6,9 +7,9 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AuthControllerTest extends WebTestCase
 {

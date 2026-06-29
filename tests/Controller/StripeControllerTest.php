@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // StripeControllerTest.php — Tests PHPUnit
 // Teste les routes Stripe :
@@ -8,9 +9,9 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class StripeControllerTest extends WebTestCase
 {
@@ -20,7 +21,7 @@ class StripeControllerTest extends WebTestCase
 
     protected function setUp(): void
     {
-        $this->client        = static::createClient();
+        $this->client = static::createClient();
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $this->nettoyerDonneesTest();
         $this->creerDonneesTest();
@@ -64,7 +65,7 @@ class StripeControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode(['email' => 'test.stripe@example.com', 'password' => 'MotDePasseTest123!'])
         );
-        $reponse     = json_decode($this->client->getResponse()->getContent(), true);
+        $reponse = json_decode($this->client->getResponse()->getContent(), true);
         $this->token = $reponse['token'];
     }
 
@@ -102,7 +103,7 @@ class StripeControllerTest extends WebTestCase
         $this->assertContains($code, [200, 400, 500],
             'La route checkout doit retourner 200, 400 ou 500');
 
-        if ($code === 200) {
+        if (200 === $code) {
             $données = json_decode($this->client->getResponse()->getContent(), true);
             $this->assertArrayHasKey('sessionId', $données);
         }
@@ -141,7 +142,7 @@ class StripeControllerTest extends WebTestCase
         $this->assertContains($code, [200, 400, 404, 500],
             'La route invoice/token doit retourner un code valide');
 
-        if ($code === 200) {
+        if (200 === $code) {
             $données = json_decode($this->client->getResponse()->getContent(), true);
             $this->assertArrayHasKey('token', $données);
         }

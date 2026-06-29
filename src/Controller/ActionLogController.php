@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // ActionLogController.php — Historique des actions
 // Retourne les dernières actions enregistrées
@@ -28,7 +29,7 @@ class ActionLogController extends AbstractController
             50
         );
 
-        $data = array_map(function($log) {
+        $data = array_map(function ($log) {
             return [
                 'id' => $log->getId(),
                 'action' => $log->getAction(),

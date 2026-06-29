@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // AuthController.php — Authentification
 // Gère l'inscription, connexion, profil,
@@ -13,10 +14,10 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/auth')]
 class AuthController extends AbstractController
@@ -131,7 +132,7 @@ class AuthController extends AbstractController
 
         // On cherche l'utilisateur par son refresh token
         $user = $em->getRepository(User::class)->findOneBy([
-            'refreshToken' => $data['refreshToken']
+            'refreshToken' => $data['refreshToken'],
         ]);
 
         // Token inconnu ou expiré
@@ -145,6 +146,7 @@ class AuthController extends AbstractController
             $user->setRefreshToken(null);
             $user->setRefreshTokenExpiry(null);
             $em->flush();
+
             return $this->json(['error' => 'Refresh token expiré, veuillez vous reconnecter'], 401);
         }
 
@@ -169,7 +171,7 @@ class AuthController extends AbstractController
     #[Route('/me', methods: ['GET'])]
     public function me(): JsonResponse
     {
-        /** @var \App\Entity\User $user */
+        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user) {
@@ -195,7 +197,7 @@ class AuthController extends AbstractController
         EntityManagerInterface $em,
         UserPasswordHasherInterface $hasher
     ): JsonResponse {
-        /** @var \App\Entity\User $user */
+        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user) {
@@ -254,7 +256,7 @@ class AuthController extends AbstractController
         $user->setResetTokenExpiry(new \DateTime('+1 hour'));
         $em->flush();
 
-        $resetLink = "https://project-manager.costincianu.fr/reset-password?token=" . $token;
+        $resetLink = 'https://project-manager.costincianu.fr/reset-password?token='.$token;
 
         $email = (new Email())
             ->from('contact@costincianu.fr')
@@ -325,7 +327,7 @@ class AuthController extends AbstractController
         Request $request,
         EntityManagerInterface $em
     ): JsonResponse {
-        /** @var \App\Entity\User $user */
+        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user) {
@@ -343,22 +345,22 @@ class AuthController extends AbstractController
             return $this->json(['error' => 'Format non supporté. Utilisez JPG, PNG ou GIF'], 400);
         }
 
-        $filename = uniqid('avatar_') . '.' . $file->guessExtension();
+        $filename = uniqid('avatar_').'.'.$file->guessExtension();
 
-        $uploadDir = __DIR__ . '/../../public/uploads/avatars/';
+        $uploadDir = __DIR__.'/../../public/uploads/avatars/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);
         }
         $file->move($uploadDir, $filename);
 
         if ($user->getAvatar()) {
-            $oldFile = $uploadDir . basename($user->getAvatar());
+            $oldFile = $uploadDir.basename($user->getAvatar());
             if (file_exists($oldFile)) {
                 unlink($oldFile);
             }
         }
 
-        $avatarUrl = '/uploads/avatars/' . $filename;
+        $avatarUrl = '/uploads/avatars/'.$filename;
         $user->setAvatar($avatarUrl);
         $em->flush();
 

@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // CustomField.php — Champ personnalisé
 // Permet d'ajouter des champs sur mesure aux projets et tâches
@@ -57,6 +58,7 @@ class CustomField
     public function setName(string $name): static
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -68,6 +70,7 @@ class CustomField
     public function setLabel(string $label): static
     {
         $this->label = $label;
+
         return $this;
     }
 
@@ -79,6 +82,7 @@ class CustomField
     public function setType(string $type): static
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -90,6 +94,7 @@ class CustomField
     public function setValue(?string $value): static
     {
         $this->value = $value;
+
         return $this;
     }
 
@@ -101,6 +106,7 @@ class CustomField
     public function setProjectId(int $projectId): static
     {
         $this->projectId = $projectId;
+
         return $this;
     }
 
@@ -112,6 +118,7 @@ class CustomField
     public function setTaskId(?int $taskId): static
     {
         $this->taskId = $taskId;
+
         return $this;
     }
 }

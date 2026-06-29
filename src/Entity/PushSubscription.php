@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // PushSubscription.php — Entité abonnement push
 // Stocke les abonnements aux notifications push
@@ -43,19 +44,61 @@ class PushSubscription
         $this->createdAt = new \DateTime();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getUserEmail(): ?string { return $this->userEmail; }
-    public function setUserEmail(string $email): static { $this->userEmail = $email; return $this; }
+    public function getUserEmail(): ?string
+    {
+        return $this->userEmail;
+    }
 
-    public function getEndpoint(): ?string { return $this->endpoint; }
-    public function setEndpoint(string $endpoint): static { $this->endpoint = $endpoint; return $this; }
+    public function setUserEmail(string $email): static
+    {
+        $this->userEmail = $email;
 
-    public function getP256dh(): ?string { return $this->p256dh; }
-    public function setP256dh(string $p256dh): static { $this->p256dh = $p256dh; return $this; }
+        return $this;
+    }
 
-    public function getAuth(): ?string { return $this->auth; }
-    public function setAuth(string $auth): static { $this->auth = $auth; return $this; }
+    public function getEndpoint(): ?string
+    {
+        return $this->endpoint;
+    }
 
-    public function getCreatedAt(): ?\DateTimeInterface { return $this->createdAt; }
+    public function setEndpoint(string $endpoint): static
+    {
+        $this->endpoint = $endpoint;
+
+        return $this;
+    }
+
+    public function getP256dh(): ?string
+    {
+        return $this->p256dh;
+    }
+
+    public function setP256dh(string $p256dh): static
+    {
+        $this->p256dh = $p256dh;
+
+        return $this;
+    }
+
+    public function getAuth(): ?string
+    {
+        return $this->auth;
+    }
+
+    public function setAuth(string $auth): static
+    {
+        $this->auth = $auth;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
 }

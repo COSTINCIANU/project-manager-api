@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // ProjectTemplateController.php — Gestion des templates
 // Permet de créer des projets à partir de modèles prédéfinis
@@ -33,9 +34,9 @@ class ProjectTemplateController extends AbstractController
     {
         $templates = $em->getRepository(ProjectTemplate::class)->findAll();
 
-        $data = array_map(function($template) {
+        $data = array_map(function ($template) {
             // On retourne aussi les tâches préremplies de chaque template
-            $taches = array_map(function($tache) {
+            $taches = array_map(function ($tache) {
                 return [
                     'id' => $tache->getId(),
                     'name' => $tache->getName(),
@@ -70,7 +71,7 @@ class ProjectTemplateController extends AbstractController
             return $this->json(['error' => 'Template non trouvé'], 404);
         }
 
-        $taches = array_map(function($tache) {
+        $taches = array_map(function ($tache) {
             return [
                 'id' => $tache->getId(),
                 'name' => $tache->getName(),
@@ -181,7 +182,7 @@ class ProjectTemplateController extends AbstractController
         $em->flush();
 
         return $this->json([
-            'message' => 'Projet créé depuis le template "' . $template->getName() . '"',
+            'message' => 'Projet créé depuis le template "'.$template->getName().'"',
             'projectId' => $project->getId(),
             'projectName' => $project->getName(),
             'tasksCreated' => $template->getTasks()->count(),

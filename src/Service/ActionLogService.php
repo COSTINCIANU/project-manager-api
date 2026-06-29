@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // ActionLogService.php — Service d'historique des actions
 // Enregistre chaque action et publie en temps réel via Mercure
@@ -18,14 +19,15 @@ class ActionLogService
         private EntityManagerInterface $em,
         private Security $security,
         private HubInterface $hub
-    ) {}
+    ) {
+    }
 
     // Enregistre une action et publie sur Mercure
     public function log(
         string $action,
         string $description,
-        string $entityType = null,
-        int $entityId = null
+        ?string $entityType = null,
+        ?int $entityId = null
     ): void {
         // Récupère l'email de l'utilisateur connecté
         $user = $this->security->getUser();

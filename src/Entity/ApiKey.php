@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // ApiKey.php — Entité clé API publique
 // Permet aux développeurs externes d'accéder
@@ -50,21 +51,66 @@ class ApiKey
         $this->apiKey = bin2hex(random_bytes(32));
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getUserEmail(): ?string { return $this->userEmail; }
-    public function setUserEmail(string $email): static { $this->userEmail = $email; return $this; }
+    public function getUserEmail(): ?string
+    {
+        return $this->userEmail;
+    }
 
-    public function getApiKey(): ?string { return $this->apiKey; }
+    public function setUserEmail(string $email): static
+    {
+        $this->userEmail = $email;
 
-    public function getName(): ?string { return $this->name; }
-    public function setName(string $name): static { $this->name = $name; return $this; }
+        return $this;
+    }
 
-    public function isActive(): bool { return $this->isActive; }
-    public function setIsActive(bool $isActive): static { $this->isActive = $isActive; return $this; }
+    public function getApiKey(): ?string
+    {
+        return $this->apiKey;
+    }
 
-    public function getCreatedAt(): ?\DateTimeInterface { return $this->createdAt; }
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
 
-    public function getLastUsedAt(): ?\DateTimeInterface { return $this->lastUsedAt; }
-    public function setLastUsedAt(?\DateTimeInterface $lastUsedAt): static { $this->lastUsedAt = $lastUsedAt; return $this; }
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function getLastUsedAt(): ?\DateTimeInterface
+    {
+        return $this->lastUsedAt;
+    }
+
+    public function setLastUsedAt(?\DateTimeInterface $lastUsedAt): static
+    {
+        $this->lastUsedAt = $lastUsedAt;
+
+        return $this;
+    }
 }

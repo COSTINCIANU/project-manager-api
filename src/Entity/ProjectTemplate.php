@@ -54,6 +54,7 @@ class ProjectTemplate
     public function setName(string $name): static
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -65,6 +66,7 @@ class ProjectTemplate
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -76,6 +78,7 @@ class ProjectTemplate
     public function setColor(?string $color): static
     {
         $this->color = $color;
+
         return $this;
     }
 
@@ -87,6 +90,7 @@ class ProjectTemplate
     public function setIcon(?string $icon): static
     {
         $this->icon = $icon;
+
         return $this;
     }
 
@@ -101,6 +105,7 @@ class ProjectTemplate
             $this->tasks->add($task);
             $task->setTemplate($this);
         }
+
         return $this;
     }
 
@@ -111,6 +116,7 @@ class ProjectTemplate
                 $task->setTemplate(null);
             }
         }
+
         return $this;
     }
 }

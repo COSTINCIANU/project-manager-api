@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // GitCommit.php — Entité pour les commits GitHub
 // Stocke les commits GitHub liés aux tâches
@@ -46,26 +47,92 @@ class GitCommit
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $committedAt = null;
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getSha(): ?string { return $this->sha; }
-    public function setSha(string $sha): static { $this->sha = $sha; return $this; }
+    public function getSha(): ?string
+    {
+        return $this->sha;
+    }
 
-    public function getMessage(): ?string { return $this->message; }
-    public function setMessage(string $message): static { $this->message = $message; return $this; }
+    public function setSha(string $sha): static
+    {
+        $this->sha = $sha;
 
-    public function getAuthor(): ?string { return $this->author; }
-    public function setAuthor(string $author): static { $this->author = $author; return $this; }
+        return $this;
+    }
 
-    public function getUrl(): ?string { return $this->url; }
-    public function setUrl(string $url): static { $this->url = $url; return $this; }
+    public function getMessage(): ?string
+    {
+        return $this->message;
+    }
 
-    public function getTaskId(): ?int { return $this->taskId; }
-    public function setTaskId(?int $taskId): static { $this->taskId = $taskId; return $this; }
+    public function setMessage(string $message): static
+    {
+        $this->message = $message;
 
-    public function getRepository(): ?string { return $this->repository; }
-    public function setRepository(string $repository): static { $this->repository = $repository; return $this; }
+        return $this;
+    }
 
-    public function getCommittedAt(): ?\DateTimeInterface { return $this->committedAt; }
-    public function setCommittedAt(\DateTimeInterface $committedAt): static { $this->committedAt = $committedAt; return $this; }
+    public function getAuthor(): ?string
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(string $author): static
+    {
+        $this->author = $author;
+
+        return $this;
+    }
+
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(string $url): static
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    public function getTaskId(): ?int
+    {
+        return $this->taskId;
+    }
+
+    public function setTaskId(?int $taskId): static
+    {
+        $this->taskId = $taskId;
+
+        return $this;
+    }
+
+    public function getRepository(): ?string
+    {
+        return $this->repository;
+    }
+
+    public function setRepository(string $repository): static
+    {
+        $this->repository = $repository;
+
+        return $this;
+    }
+
+    public function getCommittedAt(): ?\DateTimeInterface
+    {
+        return $this->committedAt;
+    }
+
+    public function setCommittedAt(\DateTimeInterface $committedAt): static
+    {
+        $this->committedAt = $committedAt;
+
+        return $this;
+    }
 }

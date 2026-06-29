@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // UserController.php — Gestion des utilisateurs
 // Permet de récupérer la liste des utilisateurs
@@ -27,7 +28,7 @@ class UserController extends AbstractController
 
         // On retourne uniquement les infos non sensibles
         // (pas le mot de passe !)
-        $data = array_map(function($user) {
+        $data = array_map(function ($user) {
             return [
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),

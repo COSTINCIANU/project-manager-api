@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // ChatMessage.php — Entité message de chat
 // Stocke les messages de l'équipe
@@ -43,16 +44,49 @@ class ChatMessage
         $this->createdAt = new \DateTime();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getContent(): ?string { return $this->content; }
-    public function setContent(string $content): static { $this->content = $content; return $this; }
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
 
-    public function getSenderEmail(): ?string { return $this->senderEmail; }
-    public function setSenderEmail(string $email): static { $this->senderEmail = $email; return $this; }
+    public function setContent(string $content): static
+    {
+        $this->content = $content;
 
-    public function getSenderName(): ?string { return $this->senderName; }
-    public function setSenderName(?string $name): static { $this->senderName = $name; return $this; }
+        return $this;
+    }
 
-    public function getCreatedAt(): ?\DateTimeInterface { return $this->createdAt; }
+    public function getSenderEmail(): ?string
+    {
+        return $this->senderEmail;
+    }
+
+    public function setSenderEmail(string $email): static
+    {
+        $this->senderEmail = $email;
+
+        return $this;
+    }
+
+    public function getSenderName(): ?string
+    {
+        return $this->senderName;
+    }
+
+    public function setSenderName(?string $name): static
+    {
+        $this->senderName = $name;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
 }

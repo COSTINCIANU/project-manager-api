@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // PublicApiController.php — API Publique
 // Endpoints accessibles via clé API (X-API-Key)
@@ -63,11 +64,13 @@ class PublicApiController extends AbstractController
     public function projects(Request $request, EntityManagerInterface $em): JsonResponse
     {
         $error = $this->checkApiKey($request, $em);
-        if ($error) return $error;
+        if ($error) {
+            return $error;
+        }
 
         $projects = $em->getRepository(Project::class)->findAll();
 
-        $data = array_map(function($project) {
+        $data = array_map(function ($project) {
             return [
                 'id' => $project->getId(),
                 'name' => $project->getName(),
@@ -91,7 +94,9 @@ class PublicApiController extends AbstractController
     public function tasks(Request $request, EntityManagerInterface $em): JsonResponse
     {
         $error = $this->checkApiKey($request, $em);
-        if ($error) return $error;
+        if ($error) {
+            return $error;
+        }
 
         // Filtres optionnels
         $projectId = $request->query->get('project_id');
@@ -99,13 +104,19 @@ class PublicApiController extends AbstractController
         $done = $request->query->get('done');
 
         $criteria = [];
-        if ($projectId) $criteria['projectId'] = (int)$projectId;
-        if ($priority) $criteria['priority'] = $priority;
-        if ($done !== null) $criteria['done'] = $done === 'true';
+        if ($projectId) {
+            $criteria['projectId'] = (int) $projectId;
+        }
+        if ($priority) {
+            $criteria['priority'] = $priority;
+        }
+        if (null !== $done) {
+            $criteria['done'] = 'true' === $done;
+        }
 
         $tasks = $em->getRepository(Task::class)->findBy($criteria);
 
-        $data = array_map(function($task) {
+        $data = array_map(function ($task) {
             return [
                 'id' => $task->getId(),
                 'name' => $task->getName(),
@@ -133,7 +144,9 @@ class PublicApiController extends AbstractController
     public function task(int $id, Request $request, EntityManagerInterface $em): JsonResponse
     {
         $error = $this->checkApiKey($request, $em);
-        if ($error) return $error;
+        if ($error) {
+            return $error;
+        }
 
         $task = $em->getRepository(Task::class)->find($id);
 
@@ -166,20 +179,22 @@ class PublicApiController extends AbstractController
     public function stats(Request $request, EntityManagerInterface $em): JsonResponse
     {
         $error = $this->checkApiKey($request, $em);
-        if ($error) return $error;
+        if ($error) {
+            return $error;
+        }
 
         $tasks = $em->getRepository(Task::class)->findAll();
         $projects = $em->getRepository(Project::class)->findAll();
 
         $totalTasks = count($tasks);
-        $doneTasks = count(array_filter($tasks, fn($t) => $t->isDone()));
-        $inProgressTasks = count(array_filter($tasks, fn($t) => $t->isInProgress() && !$t->isDone()));
+        $doneTasks = count(array_filter($tasks, fn ($t) => $t->isDone()));
+        $inProgressTasks = count(array_filter($tasks, fn ($t) => $t->isInProgress() && !$t->isDone()));
 
         return $this->json([
             'data' => [
                 'projects' => [
                     'total' => count($projects),
-                    'active' => count(array_filter($projects, fn($p) => $p->getStatus() === 'En cours')),
+                    'active' => count(array_filter($projects, fn ($p) => 'En cours' === $p->getStatus())),
                 ],
                 'tasks' => [
                     'total' => $totalTasks,
@@ -191,10 +206,10 @@ class PublicApiController extends AbstractController
                         : 0,
                 ],
                 'priorities' => [
-                    'critique' => count(array_filter($tasks, fn($t) => $t->getPriority() === 'critique')),
-                    'haute' => count(array_filter($tasks, fn($t) => $t->getPriority() === 'haute')),
-                    'normale' => count(array_filter($tasks, fn($t) => $t->getPriority() === 'normale')),
-                    'basse' => count(array_filter($tasks, fn($t) => $t->getPriority() === 'basse')),
+                    'critique' => count(array_filter($tasks, fn ($t) => 'critique' === $t->getPriority())),
+                    'haute' => count(array_filter($tasks, fn ($t) => 'haute' === $t->getPriority())),
+                    'normale' => count(array_filter($tasks, fn ($t) => 'normale' === $t->getPriority())),
+                    'basse' => count(array_filter($tasks, fn ($t) => 'basse' === $t->getPriority())),
                 ],
             ],
             'timestamp' => date('Y-m-d H:i:s'),

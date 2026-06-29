@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // ProjectController.php — Gestion des projets
 // Permissions selon le rôle métier :
@@ -11,13 +12,13 @@
 namespace App\Controller;
 
 use App\Entity\Project;
+use App\Service\ActionLogService;
 use App\Service\PermissionService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Service\ActionLogService;
 
 #[Route('/api/projects')]
 class ProjectController extends AbstractController
@@ -31,7 +32,7 @@ class ProjectController extends AbstractController
         // Tous les rôles peuvent voir les projets
         $projects = $em->getRepository(Project::class)->findAll();
 
-        $data = array_map(function($project) {
+        $data = array_map(function ($project) {
             return [
                 'id' => $project->getId(),
                 'name' => $project->getName(),
@@ -72,7 +73,7 @@ class ProjectController extends AbstractController
         // =====================
         // Log de l'action — enregistre la création dans l'historique
         // =====================
-        $actionLog->log('create_project', 'Projet créé : ' . $project->getName(), 'project', $project->getId());
+        $actionLog->log('create_project', 'Projet créé : '.$project->getName(), 'project', $project->getId());
 
         return $this->json([
             'id' => $project->getId(),
@@ -110,7 +111,7 @@ class ProjectController extends AbstractController
         // =====================
         // Log de l'action — enregistre la modification dans l'historique
         // =====================
-        $actionLog->log('update_project', 'Projet modifié : ' . $project->getName(), 'project', $project->getId());
+        $actionLog->log('update_project', 'Projet modifié : '.$project->getName(), 'project', $project->getId());
 
         return $this->json([
             'id' => $project->getId(),
@@ -141,7 +142,7 @@ class ProjectController extends AbstractController
         // Log de l'action — enregistre la suppression AVANT de supprimer
         // car après on n'a plus accès au nom du projet
         // =====================
-        $actionLog->log('delete_project', 'Projet supprimé : ' . $project->getName(), 'project', $id);
+        $actionLog->log('delete_project', 'Projet supprimé : '.$project->getName(), 'project', $id);
 
         $em->remove($project);
         $em->flush();

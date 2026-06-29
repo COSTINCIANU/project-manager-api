@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // RegleAutomatisationRepository.php — Recherches en BDD
 // Fournit les méthodes pour retrouver les règles

@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // SearchController.php — Recherche avancée
 // Cherche dans les projets et les tâches simultanément
@@ -35,31 +36,31 @@ class SearchController extends AbstractController
         // =====================
 
         // Terme de recherche libre
-        $terme      = trim($request->query->get('q', ''));
+        $terme = trim($request->query->get('q', ''));
 
         // Filtre par type de ticket
-        $type       = $request->query->get('type', '');
+        $type = $request->query->get('type', '');
 
         // Filtre par priorité
-        $priorite   = $request->query->get('priority', '');
+        $priorite = $request->query->get('priority', '');
 
         // Filtre par statut
-        $statut     = $request->query->get('status', '');
+        $statut = $request->query->get('status', '');
 
         // Filtre par projet
-        $projetId   = $request->query->get('project_id', '');
+        $projetId = $request->query->get('project_id', '');
 
         // Filtre par utilisateur assigné
-        $assigneA   = $request->query->get('assigned_to', '');
+        $assigneA = $request->query->get('assigned_to', '');
 
         // Filtre par sprint
-        $sprintId   = $request->query->get('sprint_id', '');
+        $sprintId = $request->query->get('sprint_id', '');
 
         // Filtre par date d'échéance — début de plage
-        $dateDebut  = $request->query->get('date_from', '');
+        $dateDebut = $request->query->get('date_from', '');
 
         // Filtre par date d'échéance — fin de plage
-        $dateFin    = $request->query->get('date_to', '');
+        $dateFin = $request->query->get('date_to', '');
 
         // Si aucun filtre fourni — retourne vide
         $aucunFiltre = empty($terme) && empty($type) && empty($priorite)
@@ -81,10 +82,10 @@ class SearchController extends AbstractController
         if (!empty($terme)) {
             $qbProjets->andWhere(
                 $qbProjets->expr()->orX(
-                    $qbProjets->expr()->like('p.name',        ':terme'),
+                    $qbProjets->expr()->like('p.name', ':terme'),
                     // $qbProjets->expr()->like('p.description', ':terme')
                 )
-            )->setParameter('terme', '%' . $terme . '%');
+            )->setParameter('terme', '%'.$terme.'%');
         }
 
         // Filtre par projet si fourni
@@ -93,15 +94,15 @@ class SearchController extends AbstractController
                 ->setParameter('projetId', (int) $projetId);
         }
 
-        $projets     = $qbProjets->getQuery()->getResult();
-        $projetsData = array_map(fn(Project $projet) => [
-            'id'          => $projet->getId(),
-            'name'        => $projet->getName(),
+        $projets = $qbProjets->getQuery()->getResult();
+        $projetsData = array_map(fn (Project $projet) => [
+            'id' => $projet->getId(),
+            'name' => $projet->getName(),
             'description' => null,
-            'status'      => $projet->getStatus(),
-            'color'       => $projet->getColor(),
-            'progress'    => $projet->getProgress(),
-            'type'        => 'project',
+            'status' => $projet->getStatus(),
+            'color' => $projet->getColor(),
+            'progress' => $projet->getProgress(),
+            'type' => 'project',
         ], $projets);
 
         // =====================
@@ -116,10 +117,10 @@ class SearchController extends AbstractController
         if (!empty($terme)) {
             $qbTaches->andWhere(
                 $qbTaches->expr()->orX(
-                    $qbTaches->expr()->like('t.name',        ':terme'),
+                    $qbTaches->expr()->like('t.name', ':terme'),
                     $qbTaches->expr()->like('t.description', ':terme')
                 )
-            )->setParameter('terme', '%' . $terme . '%');
+            )->setParameter('terme', '%'.$terme.'%');
         }
 
         // Filtre par type de ticket
@@ -137,10 +138,10 @@ class SearchController extends AbstractController
         // Filtre par statut — 3 états possibles
         if (!empty($statut)) {
             match ($statut) {
-                'done'        => $qbTaches->andWhere('t.done = true'),
+                'done' => $qbTaches->andWhere('t.done = true'),
                 'in_progress' => $qbTaches->andWhere('t.inProgress = true AND t.done = false'),
-                'todo'        => $qbTaches->andWhere('t.inProgress = false AND t.done = false'),
-                default       => null,
+                'todo' => $qbTaches->andWhere('t.inProgress = false AND t.done = false'),
+                default => null,
             };
         }
 
@@ -177,26 +178,26 @@ class SearchController extends AbstractController
         // Tri par date de création décroissante
         $qbTaches->orderBy('t.id', 'DESC');
 
-        $taches     = $qbTaches->getQuery()->getResult();
-        $tachesData = array_map(fn(Task $tache) => [
-            'id'          => $tache->getId(),
-            'name'        => $tache->getName(),
+        $taches = $qbTaches->getQuery()->getResult();
+        $tachesData = array_map(fn (Task $tache) => [
+            'id' => $tache->getId(),
+            'name' => $tache->getName(),
             'description' => $tache->getDescription(),
-            'priority'    => $tache->getPriority(),
-            'ticketType'  => $tache->getTicketType() ?? 'task',
-            'done'        => $tache->isDone(),
-            'inProgress'  => $tache->isInProgress(),
-            'projectId'   => $tache->getProjectId(),
-            'assignedTo'  => $tache->getAssignedTo(),
-            'sprintId'    => $tache->getSprintId(),
-            'dueDate'     => $tache->getDueDate(),
-            'type'        => 'task',
+            'priority' => $tache->getPriority(),
+            'ticketType' => $tache->getTicketType() ?? 'task',
+            'done' => $tache->isDone(),
+            'inProgress' => $tache->isInProgress(),
+            'projectId' => $tache->getProjectId(),
+            'assignedTo' => $tache->getAssignedTo(),
+            'sprintId' => $tache->getSprintId(),
+            'dueDate' => $tache->getDueDate(),
+            'type' => 'task',
         ], $taches);
 
         return $this->json([
             'projects' => $projetsData,
-            'tasks'    => $tachesData,
-            'total'    => count($projetsData) + count($tachesData),
+            'tasks' => $tachesData,
+            'total' => count($projetsData) + count($tachesData),
         ]);
     }
 
@@ -209,15 +210,15 @@ class SearchController extends AbstractController
     public function rechercherTaches(Request $request, EntityManagerInterface $em): JsonResponse
     {
         // Récupère tous les filtres
-        $terme      = trim($request->query->get('q', ''));
-        $type       = $request->query->get('type', '');
-        $priorite   = $request->query->get('priority', '');
-        $statut     = $request->query->get('status', '');
-        $projetId   = $request->query->get('project_id', '');
-        $assigneA   = $request->query->get('assigned_to', '');
-        $sprintId   = $request->query->get('sprint_id', '');
-        $dateDebut  = $request->query->get('date_from', '');
-        $dateFin    = $request->query->get('date_to', '');
+        $terme = trim($request->query->get('q', ''));
+        $type = $request->query->get('type', '');
+        $priorite = $request->query->get('priority', '');
+        $statut = $request->query->get('status', '');
+        $projetId = $request->query->get('project_id', '');
+        $assigneA = $request->query->get('assigned_to', '');
+        $sprintId = $request->query->get('sprint_id', '');
+        $dateDebut = $request->query->get('date_from', '');
+        $dateFin = $request->query->get('date_to', '');
 
         $qb = $em->createQueryBuilder()
             ->select('t')
@@ -227,10 +228,10 @@ class SearchController extends AbstractController
         if (!empty($terme)) {
             $qb->andWhere(
                 $qb->expr()->orX(
-                    $qb->expr()->like('t.name',        ':terme'),
+                    $qb->expr()->like('t.name', ':terme'),
                     $qb->expr()->like('t.description', ':terme')
                 )
-            )->setParameter('terme', '%' . $terme . '%');
+            )->setParameter('terme', '%'.$terme.'%');
         }
 
         // Filtre par type de ticket
@@ -248,10 +249,10 @@ class SearchController extends AbstractController
         // Filtre par statut
         if (!empty($statut)) {
             match ($statut) {
-                'done'        => $qb->andWhere('t.done = true'),
+                'done' => $qb->andWhere('t.done = true'),
                 'in_progress' => $qb->andWhere('t.inProgress = true AND t.done = false'),
-                'todo'        => $qb->andWhere('t.inProgress = false AND t.done = false'),
-                default       => null,
+                'todo' => $qb->andWhere('t.inProgress = false AND t.done = false'),
+                default => null,
             };
         }
 
@@ -289,19 +290,19 @@ class SearchController extends AbstractController
 
         $taches = $qb->getQuery()->getResult();
 
-        $tachesData = array_map(fn(Task $tache) => [
-            'id'          => $tache->getId(),
-            'name'        => $tache->getName(),
+        $tachesData = array_map(fn (Task $tache) => [
+            'id' => $tache->getId(),
+            'name' => $tache->getName(),
             'description' => $tache->getDescription(),
-            'priority'    => $tache->getPriority(),
-            'ticketType'  => $tache->getTicketType() ?? 'task',
-            'done'        => $tache->isDone(),
-            'inProgress'  => $tache->isInProgress(),
-            'projectId'   => $tache->getProjectId(),
-            'assignedTo'  => $tache->getAssignedTo(),
-            'sprintId'    => $tache->getSprintId(),
-            'dueDate'     => $tache->getDueDate(),
-            'type'        => 'task',
+            'priority' => $tache->getPriority(),
+            'ticketType' => $tache->getTicketType() ?? 'task',
+            'done' => $tache->isDone(),
+            'inProgress' => $tache->isInProgress(),
+            'projectId' => $tache->getProjectId(),
+            'assignedTo' => $tache->getAssignedTo(),
+            'sprintId' => $tache->getSprintId(),
+            'dueDate' => $tache->getDueDate(),
+            'type' => 'task',
         ], $taches);
 
         return $this->json([

@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // SearchControllerTest.php — Tests PHPUnit
 // Teste la recherche avancée avec filtres combinés
@@ -7,11 +8,11 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\User;
 use App\Entity\Project;
 use App\Entity\Task;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class SearchControllerTest extends WebTestCase
 {
@@ -32,7 +33,7 @@ class SearchControllerTest extends WebTestCase
     // =====================
     protected function setUp(): void
     {
-        $this->client        = static::createClient();
+        $this->client = static::createClient();
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
 
         $this->nettoyerDonneesTest();
@@ -152,12 +153,12 @@ class SearchControllerTest extends WebTestCase
             '/api/auth/login',
             [], [], ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-                'email'    => 'test.search@example.com',
+                'email' => 'test.search@example.com',
                 'password' => 'MotDePasseTest123!',
             ])
         );
 
-        $reponse     = json_decode($this->client->getResponse()->getContent(), true);
+        $reponse = json_decode($this->client->getResponse()->getContent(), true);
         $this->token = $reponse['token'];
     }
 
@@ -179,8 +180,8 @@ class SearchControllerTest extends WebTestCase
 
         // Vérifie que la réponse contient les clés attendues
         $this->assertArrayHasKey('projects', $données);
-        $this->assertArrayHasKey('tasks',    $données);
-        $this->assertArrayHasKey('total',    $données);
+        $this->assertArrayHasKey('tasks', $données);
+        $this->assertArrayHasKey('total', $données);
 
         // Les 4 tâches de test contiennent "recherche"
         $this->assertGreaterThanOrEqual(4, count($données['tasks']),
@@ -333,7 +334,7 @@ class SearchControllerTest extends WebTestCase
         $données = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertEmpty($données['projects'], 'Sans filtre les projets doivent être vides');
-        $this->assertEmpty($données['tasks'],    'Sans filtre les tâches doivent être vides');
+        $this->assertEmpty($données['tasks'], 'Sans filtre les tâches doivent être vides');
         $this->assertEquals(0, $données['total']);
     }
 

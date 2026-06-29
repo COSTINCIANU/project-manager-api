@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // SprintController.php — Gestion des sprints
 // Un sprint est une période de travail fixe
@@ -35,7 +36,7 @@ class SprintController extends AbstractController
             ['id' => 'DESC']
         );
 
-        return $this->json(array_map(fn($s) => $this->sprintVersTableau($s, $em), $sprints));
+        return $this->json(array_map(fn ($s) => $this->sprintVersTableau($s, $em), $sprints));
     }
 
     // =====================
@@ -51,7 +52,7 @@ class SprintController extends AbstractController
             'sprintId' => null,
         ]);
 
-        $data = array_map(function($tache) {
+        $data = array_map(function ($tache) {
             return [
                 'id' => $tache->getId(),
                 'name' => $tache->getName(),
@@ -116,11 +117,21 @@ class SprintController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        if (isset($data['name'])) $sprint->setName($data['name']);
-        if (isset($data['goal'])) $sprint->setGoal($data['goal']);
-        if (isset($data['status'])) $sprint->setStatus($data['status']);
-        if (isset($data['startDate'])) $sprint->setStartDate($data['startDate']);
-        if (isset($data['endDate'])) $sprint->setEndDate($data['endDate']);
+        if (isset($data['name'])) {
+            $sprint->setName($data['name']);
+        }
+        if (isset($data['goal'])) {
+            $sprint->setGoal($data['goal']);
+        }
+        if (isset($data['status'])) {
+            $sprint->setStatus($data['status']);
+        }
+        if (isset($data['startDate'])) {
+            $sprint->setStartDate($data['startDate']);
+        }
+        if (isset($data['endDate'])) {
+            $sprint->setEndDate($data['endDate']);
+        }
 
         $em->flush();
 
@@ -223,7 +234,7 @@ class SprintController extends AbstractController
         // Récupère les tâches assignées à ce sprint
         $taches = $em->getRepository(Task::class)->findBy(['sprintId' => $sprint->getId()]);
 
-        $tachesData = array_map(function($tache) {
+        $tachesData = array_map(function ($tache) {
             return [
                 'id' => $tache->getId(),
                 'name' => $tache->getName(),
@@ -237,7 +248,7 @@ class SprintController extends AbstractController
 
         // Calcule la progression du sprint
         $total = count($tachesData);
-        $terminees = count(array_filter($tachesData, fn($t) => $t['done']));
+        $terminees = count(array_filter($tachesData, fn ($t) => $t['done']));
         $progression = $total > 0 ? round(($terminees / $total) * 100) : 0;
 
         return [
@@ -293,7 +304,6 @@ class SprintController extends AbstractController
             ]);
 
             return $this->json(['url' => $session->url]);
-
         } catch (\Exception $e) {
             return $this->json(['error' => $e->getMessage()], 500);
         }

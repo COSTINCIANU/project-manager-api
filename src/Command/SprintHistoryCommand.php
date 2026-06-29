@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // SprintHistoryCommand.php — Commande cron
 // Enregistre chaque jour l'état de tous les sprints actifs
@@ -31,13 +32,14 @@ class SprintHistoryCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $today = new \DateTime('today');
-        $output->writeln('📊 Enregistrement de l\'historique des sprints — ' . $today->format('Y-m-d'));
+        $output->writeln('📊 Enregistrement de l\'historique des sprints — '.$today->format('Y-m-d'));
 
         // On récupère tous les sprints actifs
         $sprints = $this->em->getRepository(Sprint::class)->findBy(['status' => 'actif']);
 
         if (empty($sprints)) {
             $output->writeln('ℹ️  Aucun sprint actif trouvé.');
+
             return Command::SUCCESS;
         }
 
@@ -51,7 +53,8 @@ class SprintHistoryCommand extends Command
             ]);
 
             if ($existant) {
-                $output->writeln('⏭️  Sprint #' . $sprint->getId() . ' déjà enregistré aujourd\'hui');
+                $output->writeln('⏭️  Sprint #'.$sprint->getId().' déjà enregistré aujourd\'hui');
+
                 continue;
             }
 
@@ -61,7 +64,7 @@ class SprintHistoryCommand extends Command
             ]);
 
             $total = count($taches);
-            $terminees = count(array_filter($taches, fn($t) => $t->isDone()));
+            $terminees = count(array_filter($taches, fn ($t) => $t->isDone()));
             $restantes = $total - $terminees;
 
             // On enregistre l'état du sprint pour aujourd'hui
@@ -73,16 +76,16 @@ class SprintHistoryCommand extends Command
             $history->setTasksRemaining($restantes);
 
             $this->em->persist($history);
-            $nombreEnregistres++;
+            ++$nombreEnregistres;
 
             $output->writeln(
-                '✅ Sprint "' . $sprint->getName() . '" — ' .
-                $total . ' tâches, ' . $terminees . ' terminées, ' . $restantes . ' restantes'
+                '✅ Sprint "'.$sprint->getName().'" — '.
+                $total.' tâches, '.$terminees.' terminées, '.$restantes.' restantes'
             );
         }
 
         $this->em->flush();
-        $output->writeln('🎉 ' . $nombreEnregistres . ' sprint(s) enregistré(s) avec succès !');
+        $output->writeln('🎉 '.$nombreEnregistres.' sprint(s) enregistré(s) avec succès !');
 
         return Command::SUCCESS;
     }

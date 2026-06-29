@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // Mention.php — Entité mention
 // Enregistre les mentions @utilisateur dans les commentaires
@@ -47,22 +48,73 @@ class Mention
         $this->createdAt = new \DateTime();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getMentionedEmail(): ?string { return $this->mentionedEmail; }
-    public function setMentionedEmail(string $email): static { $this->mentionedEmail = $email; return $this; }
+    public function getMentionedEmail(): ?string
+    {
+        return $this->mentionedEmail;
+    }
 
-    public function getMentionedByEmail(): ?string { return $this->mentionedByEmail; }
-    public function setMentionedByEmail(string $email): static { $this->mentionedByEmail = $email; return $this; }
+    public function setMentionedEmail(string $email): static
+    {
+        $this->mentionedEmail = $email;
 
-    public function getCommentId(): ?int { return $this->commentId; }
-    public function setCommentId(int $commentId): static { $this->commentId = $commentId; return $this; }
+        return $this;
+    }
 
-    public function getTaskId(): ?int { return $this->taskId; }
-    public function setTaskId(int $taskId): static { $this->taskId = $taskId; return $this; }
+    public function getMentionedByEmail(): ?string
+    {
+        return $this->mentionedByEmail;
+    }
 
-    public function isRead(): bool { return $this->isRead; }
-    public function setIsRead(bool $isRead): static { $this->isRead = $isRead; return $this; }
+    public function setMentionedByEmail(string $email): static
+    {
+        $this->mentionedByEmail = $email;
 
-    public function getCreatedAt(): ?\DateTimeInterface { return $this->createdAt; }
+        return $this;
+    }
+
+    public function getCommentId(): ?int
+    {
+        return $this->commentId;
+    }
+
+    public function setCommentId(int $commentId): static
+    {
+        $this->commentId = $commentId;
+
+        return $this;
+    }
+
+    public function getTaskId(): ?int
+    {
+        return $this->taskId;
+    }
+
+    public function setTaskId(int $taskId): static
+    {
+        $this->taskId = $taskId;
+
+        return $this;
+    }
+
+    public function isRead(): bool
+    {
+        return $this->isRead;
+    }
+
+    public function setIsRead(bool $isRead): static
+    {
+        $this->isRead = $isRead;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // SlackService.php — Service d'intégration Slack
 // Envoie des notifications dans un canal Slack
@@ -13,7 +14,8 @@ class SlackService
 {
     public function __construct(
         private HttpClientInterface $httpClient
-    ) {}
+    ) {
+    }
 
     // =====================
     // ENVOYER UN MESSAGE SLACK
@@ -37,7 +39,7 @@ class SlackService
                 'json' => $payload,
             ]);
 
-            return $response->getStatusCode() === 200;
+            return 200 === $response->getStatusCode();
         } catch (\Exception $e) {
             return false;
         }
@@ -48,7 +50,7 @@ class SlackService
     // =====================
     public function notifyTaskCreated(string $taskName, string $projectName, string $priority, string $userEmail): bool
     {
-        $emoji = match($priority) {
+        $emoji = match ($priority) {
             'critique' => '🔴',
             'haute' => '🟠',
             'normale' => '🟡',
@@ -57,9 +59,9 @@ class SlackService
         };
 
         return $this->send(
-            "📌 Nouvelle tâche créée",
+            '📌 Nouvelle tâche créée',
             [[
-                'color' => match($priority) {
+                'color' => match ($priority) {
                     'critique' => '#e74c3c',
                     'haute' => '#e67e22',
                     'normale' => '#378ADD',
@@ -69,7 +71,7 @@ class SlackService
                 'fields' => [
                     ['title' => 'Tâche', 'value' => $taskName, 'short' => true],
                     ['title' => 'Projet', 'value' => $projectName, 'short' => true],
-                    ['title' => 'Priorité', 'value' => $emoji . ' ' . ucfirst($priority), 'short' => true],
+                    ['title' => 'Priorité', 'value' => $emoji.' '.ucfirst($priority), 'short' => true],
                     ['title' => 'Créé par', 'value' => $userEmail, 'short' => true],
                 ],
                 'footer' => 'Project Manager',

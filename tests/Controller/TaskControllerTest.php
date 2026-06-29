@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // TaskControllerTest.php — Tests des tâches
 // Teste les routes : lister, créer, supprimer
@@ -7,10 +8,10 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\User;
 use App\Entity\Task;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class TaskControllerTest extends WebTestCase
 {
@@ -95,6 +96,7 @@ class TaskControllerTest extends WebTestCase
         );
 
         $reponse = json_decode($this->client->getResponse()->getContent(), true);
+
         return $reponse['token'];
     }
 
@@ -113,7 +115,7 @@ class TaskControllerTest extends WebTestCase
             [], [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+                'HTTP_AUTHORIZATION' => 'Bearer '.$token,
             ]
         );
 
@@ -150,7 +152,7 @@ class TaskControllerTest extends WebTestCase
             [], [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+                'HTTP_AUTHORIZATION' => 'Bearer '.$token,
             ],
             json_encode([
                 'name' => 'Tâche de test PHPUnit',
@@ -179,7 +181,7 @@ class TaskControllerTest extends WebTestCase
             [], [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+                'HTTP_AUTHORIZATION' => 'Bearer '.$token,
             ],
             json_encode([
                 'name' => 'Tâche de test PHPUnit',
@@ -211,7 +213,7 @@ class TaskControllerTest extends WebTestCase
             [], [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTHORIZATION' => 'Bearer ' . $tokenDev,
+                'HTTP_AUTHORIZATION' => 'Bearer '.$tokenDev,
             ],
             json_encode([
                 'name' => 'Tâche de test PHPUnit',
@@ -230,11 +232,11 @@ class TaskControllerTest extends WebTestCase
 
         $this->client->request(
             'DELETE',
-            '/api/tasks/' . $idTache,
+            '/api/tasks/'.$idTache,
             [], [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTHORIZATION' => 'Bearer ' . $tokenManager,
+                'HTTP_AUTHORIZATION' => 'Bearer '.$tokenManager,
             ]
         );
 
@@ -255,7 +257,7 @@ class TaskControllerTest extends WebTestCase
             [], [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTHORIZATION' => 'Bearer ' . $tokenDev,
+                'HTTP_AUTHORIZATION' => 'Bearer '.$tokenDev,
             ],
             json_encode([
                 'name' => 'Tâche de test PHPUnit',
@@ -274,11 +276,11 @@ class TaskControllerTest extends WebTestCase
 
         $this->client->request(
             'DELETE',
-            '/api/tasks/' . $idTache,
+            '/api/tasks/'.$idTache,
             [], [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTHORIZATION' => 'Bearer ' . $tokenClient,
+                'HTTP_AUTHORIZATION' => 'Bearer '.$tokenClient,
             ]
         );
 
@@ -296,7 +298,7 @@ class TaskControllerTest extends WebTestCase
             [], [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+                'HTTP_AUTHORIZATION' => 'Bearer '.$token,
             ]
         );
 

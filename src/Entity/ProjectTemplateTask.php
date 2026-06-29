@@ -43,6 +43,7 @@ class ProjectTemplateTask
     public function setName(string $name): static
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -54,6 +55,7 @@ class ProjectTemplateTask
     public function setPriority(?string $priority): static
     {
         $this->priority = $priority;
+
         return $this;
     }
 
@@ -65,6 +67,7 @@ class ProjectTemplateTask
     public function setPosition(int $position): static
     {
         $this->position = $position;
+
         return $this;
     }
 
@@ -76,6 +79,7 @@ class ProjectTemplateTask
     public function setTemplate(?ProjectTemplate $template): static
     {
         $this->template = $template;
+
         return $this;
     }
 }

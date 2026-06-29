@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity;
 
 use App\Repository\AttachmentRepository;
@@ -33,19 +34,61 @@ class Attachment
         $this->uploadedAt = new \DateTime();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getFilename(): ?string { return $this->filename; }
-    public function setFilename(string $filename): static { $this->filename = $filename; return $this; }
+    public function getFilename(): ?string
+    {
+        return $this->filename;
+    }
 
-    public function getPath(): ?string { return $this->path; }
-    public function setPath(string $path): static { $this->path = $path; return $this; }
+    public function setFilename(string $filename): static
+    {
+        $this->filename = $filename;
 
-    public function getMimeType(): ?string { return $this->mimeType; }
-    public function setMimeType(?string $mimeType): static { $this->mimeType = $mimeType; return $this; }
+        return $this;
+    }
 
-    public function getUploadedAt(): ?\DateTimeInterface { return $this->uploadedAt; }
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
 
-    public function getTask(): ?Task { return $this->task; }
-    public function setTask(?Task $task): static { $this->task = $task; return $this; }
+    public function setPath(string $path): static
+    {
+        $this->path = $path;
+
+        return $this;
+    }
+
+    public function getMimeType(): ?string
+    {
+        return $this->mimeType;
+    }
+
+    public function setMimeType(?string $mimeType): static
+    {
+        $this->mimeType = $mimeType;
+
+        return $this;
+    }
+
+    public function getUploadedAt(): ?\DateTimeInterface
+    {
+        return $this->uploadedAt;
+    }
+
+    public function getTask(): ?Task
+    {
+        return $this->task;
+    }
+
+    public function setTask(?Task $task): static
+    {
+        $this->task = $task;
+
+        return $this;
+    }
 }

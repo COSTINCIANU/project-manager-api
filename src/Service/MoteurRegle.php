@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // MoteurRegle.php — Moteur d'exécution des règles
 // Vérifie et exécute les règles automatiquement
@@ -8,8 +9,8 @@
 
 namespace App\Service;
 
-use App\Entity\Task;
 use App\Entity\RegleAutomatisation;
+use App\Entity\Task;
 use App\Repository\RegleAutomatisationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -17,8 +18,9 @@ class MoteurRegle
 {
     public function __construct(
         private RegleAutomatisationRepository $regleRepository,
-        private EntityManagerInterface        $em,
-    ) {}
+        private EntityManagerInterface $em,
+    ) {
+    }
 
     // =====================
     // VÉRIFIER LES RÈGLES APRÈS CHANGEMENT DE STATUT
@@ -40,7 +42,7 @@ class MoteurRegle
 
         foreach ($regles as $regle) {
             // Déclenche si la valeur correspond au nouveau statut ou si pas de valeur définie
-            if ($regle->getValeurDeclencheur() === $nouveauStatut || $regle->getValeurDeclencheur() === null) {
+            if ($regle->getValeurDeclencheur() === $nouveauStatut || null === $regle->getValeurDeclencheur()) {
                 $this->executerAction($regle, $tache);
             }
         }
@@ -69,25 +71,26 @@ class MoteurRegle
     private function executerAction(RegleAutomatisation $regle, Task $tache): void
     {
         switch ($regle->getAction()) {
-
             // Change la priorité de la tâche
             case 'changer_priorite':
                 if ($regle->getValeurAction()) {
                     $tache->setPriority($regle->getValeurAction());
                     $this->em->flush();
                 }
+
                 break;
 
-            // Notifie le manager — journalise pour l'instant, email à brancher plus tard
+                // Notifie le manager — journalise pour l'instant, email à brancher plus tard
             case 'notifier_manager':
                 error_log(sprintf(
                     '[MoteurRegle] Règle "%s" déclenchée sur tâche #%d — notification manager',
                     $regle->getNom(),
                     $tache->getId()
                 ));
+
                 break;
 
-            // Envoie un email — à brancher sur Symfony Mailer
+                // Envoie un email — à brancher sur Symfony Mailer
             case 'envoyer_email':
                 error_log(sprintf(
                     '[MoteurRegle] Règle "%s" — email vers %s pour tâche #%d',
@@ -95,6 +98,7 @@ class MoteurRegle
                     $regle->getValeurAction() ?? 'non défini',
                     $tache->getId()
                 ));
+
                 break;
         }
     }

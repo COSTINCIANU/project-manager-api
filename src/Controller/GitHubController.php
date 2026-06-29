@@ -1,4 +1,5 @@
 <?php
+
 // =====================================================
 // GitHubController.php — Gestion des webhooks GitHub
 // Reçoit les webhooks de GitHub et enregistre
@@ -41,10 +42,12 @@ class GitHubController extends AbstractController
         foreach ($payload['commits'] as $commitData) {
             // On vérifie si le commit n'existe pas déjà
             $existing = $em->getRepository(GitCommit::class)->findOneBy([
-                'sha' => $commitData['id']
+                'sha' => $commitData['id'],
             ]);
 
-            if ($existing) continue;
+            if ($existing) {
+                continue;
+            }
 
             // On cherche si le message contient un #id de tâche
             // Convention : "#123" dans le message lie au task id 123
@@ -70,7 +73,7 @@ class GitHubController extends AbstractController
         $em->flush();
 
         return $this->json([
-            'message' => count($savedCommits) . ' commit(s) enregistré(s)',
+            'message' => count($savedCommits).' commit(s) enregistré(s)',
             'commits' => $savedCommits,
         ]);
     }
@@ -87,7 +90,7 @@ class GitHubController extends AbstractController
             20 // Limite à 20 commits
         );
 
-        $data = array_map(function($commit) {
+        $data = array_map(function ($commit) {
             return [
                 'id' => $commit->getId(),
                 'sha' => substr($commit->getSha(), 0, 7),
@@ -111,7 +114,7 @@ class GitHubController extends AbstractController
     {
         $commits = $repo->findByTaskId($taskId);
 
-        $data = array_map(function($commit) {
+        $data = array_map(function ($commit) {
             return [
                 'id' => $commit->getId(),
                 'sha' => substr($commit->getSha(), 0, 7),
