@@ -1,0 +1,11 @@
+# =====================================================
+# rate_limiter.yaml — Limitation du nombre de requêtes
+# Protège l'API contre les abus
+# Limite : 100 requêtes par minute et par IP
+# =====================================================
+framework:
+    rate_limiter:
+        api_global:
+            policy: "sliding_window"
+            limit: 100
+            interval: "1 minute"
