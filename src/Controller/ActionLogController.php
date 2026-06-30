@@ -37,6 +37,7 @@ class ActionLogController extends AbstractController
                 'userEmail' => $log->getUserEmail(),
                 'entityType' => $log->getEntityType(),
                 'entityId' => $log->getEntityId(),
+                'ipAddress' => $log->getIpAddress(),
                 'createdAt' => $log->getCreatedAt()->format('Y-m-d H:i:s'),
             ];
         }, $logs);
