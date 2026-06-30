@@ -39,6 +39,10 @@ class ActionLog
     #[ORM\Column(nullable: true)]
     private ?int $entityId = null;
 
+    // Adresse IP de l'utilisateur ayant effectué l'action
+    #[ORM\Column(length: 45, nullable: true)]
+    private ?string $ipAddress = null;
+
     // Date de l'action
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $createdAt = null;
@@ -112,6 +116,19 @@ class ActionLog
 
         return $this;
     }
+
+
+    public function getIpAddress(): ?string
+    {
+        return $this->ipAddress;
+    }
+
+    public function setIpAddress(?string $ipAddress): static
+    {
+        $this->ipAddress = $ipAddress;
+        return $this;
+    }
+
 
     public function getCreatedAt(): ?\DateTimeInterface
     {

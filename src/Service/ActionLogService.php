@@ -1,15 +1,15 @@
 <?php
-
 // =====================================================
 // ActionLogService.php — Service d'historique des actions
 // Enregistre chaque action et publie en temps réel via Mercure
+// Capture aussi l'adresse IP pour l'audit trail RGPD
 // =====================================================
-
 namespace App\Service;
 
 use App\Entity\ActionLog;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 
@@ -18,7 +18,8 @@ class ActionLogService
     public function __construct(
         private EntityManagerInterface $em,
         private Security $security,
-        private HubInterface $hub
+        private HubInterface $hub,
+        private RequestStack $requestStack,
     ) {
     }
 
@@ -33,13 +34,17 @@ class ActionLogService
         $user = $this->security->getUser();
         $userEmail = $user ? $user->getUserIdentifier() : 'système';
 
+        // Récupère l'adresse IP de la requête courante
+        $request = $this->requestStack->getCurrentRequest();
+        $ipAddress = $request ? $request->getClientIp() : null;
+
         $log = new ActionLog();
         $log->setAction($action);
         $log->setDescription($description);
         $log->setUserEmail($userEmail);
         $log->setEntityType($entityType);
         $log->setEntityId($entityId);
-
+        $log->setIpAddress($ipAddress);
         $this->em->persist($log);
         $this->em->flush();
 
